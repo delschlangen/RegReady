@@ -7,7 +7,10 @@ export async function analyzeInput(mode, input) {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || `Request failed with status ${response.status}`);
+    const message = errorData.details
+      ? `${errorData.error}: ${errorData.details}`
+      : errorData.error || `Request failed with status ${response.status}`;
+    throw new Error(message);
   }
 
   return response.json();

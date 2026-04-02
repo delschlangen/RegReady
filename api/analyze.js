@@ -183,9 +183,10 @@ export default async function handler(req, res) {
       });
     }
 
-    return res.status(500).json({
+    const statusCode = error.status || 500;
+    return res.status(statusCode).json({
       error: 'Failed to analyze input',
-      details: error.message,
+      details: error.message || String(error),
     });
   }
 }
