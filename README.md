@@ -10,9 +10,9 @@ Turning regulatory complexity into engineering clarity — so your team ships co
 
 ## What RegReady Does
 
-RegReady helps product and engineering teams navigate the fast-moving landscape of global AI regulation. It takes two kinds of input — raw regulatory text or a product feature description — and returns structured, actionable output that engineers, product managers, and legal teams can immediately use.
+RegReady helps product and engineering teams navigate the fast-moving landscape of global AI regulation. It provides three tools — a regulatory radar for tracking new developments, a translator that converts legal text into engineering requirements, and a risk scorer that evaluates AI product features against global regulatory frameworks.
 
-Instead of waiting weeks for a legal review, you get a risk classification, regulatory exposure matrix, prioritized engineering requirements, and ready-to-file Jira tickets in seconds.
+Instead of waiting weeks for a legal review, you get a rolling regulatory feed, risk classifications, regulatory exposure matrices, prioritized engineering requirements, and ready-to-file Jira tickets in seconds.
 
 ### Regulatory Radar
 A rolling 30-day dashboard of AI regulatory developments across three data sources:
@@ -64,6 +64,7 @@ The Translator and Risk Scorer each ship with 4 curated examples from real regul
 - **Frontend:** React 19 + Vite + Tailwind CSS v4
 - **Backend:** Vercel Serverless Functions
 - **AI:** Anthropic Claude API (claude-sonnet-4-20250514)
+- **Live Data:** Federal Register API (free, no key required)
 - **Deployment:** Vercel
 - **Font:** Inter (Google Fonts)
 
@@ -135,33 +136,36 @@ Vercel should auto-detect the Vite framework. Verify these settings:
 ## Architecture
 
 ```
-┌─────────────────────────────────────────┐
-│              React Frontend              │
-│  ┌───────────┐    ┌──────────────────┐  │
-│  │ Translator │    │  Risk Scorer     │  │
-│  │    Tab     │    │     Tab          │  │
-│  └─────┬─────┘    └────────┬─────────┘  │
-│        └────────┬──────────┘            │
-│            fetch('/api/analyze')         │
-└─────────────────┬───────────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────────┐
-│     Vercel Serverless Function          │
-│         api/analyze.js                  │
-│  ┌─────────────────────────────────┐    │
-│  │  System Prompt (per mode)       │    │
-│  │  + User Input                   │    │
-│  │  → Anthropic Messages API       │    │
-│  │  → Parse JSON → Return          │    │
-│  └─────────────────────────────────┘    │
-└─────────────────┬───────────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────────┐
-│         Anthropic Claude API            │
-│      claude-sonnet-4-20250514           │
-└─────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│                    React Frontend                     │
+│  ┌──────────┐  ┌───────────┐  ┌──────────────────┐  │
+│  │  Radar   │  │ Translator │  │   Risk Scorer    │  │
+│  │   Tab    │  │    Tab     │  │      Tab         │  │
+│  └────┬─────┘  └─────┬─────┘  └────────┬─────────┘  │
+│       │              └────────┬─────────┘            │
+│       │              fetch('/api/analyze')            │
+│       │                       │                      │
+│  fetch('/api/radar-*')        │                      │
+└───────┬───────────────────────┬──────────────────────┘
+        │                       │
+        ▼                       ▼
+┌───────────────────┐  ┌───────────────────────────────┐
+│  Vercel Functions │  │     Vercel Serverless Function │
+│  radar-federal.js │  │         api/analyze.js         │
+│  radar-summarize  │  │  ┌─────────────────────────┐  │
+└──┬────────────┬───┘  │  │  System Prompt (per mode)│  │
+   │            │      │  │  + User Input → Claude   │  │
+   │            │      │  │  → Parse JSON → Return   │  │
+   │            │      │  └─────────────────────────┘  │
+   │            │      └──────────────┬────────────────┘
+   │            │                     │
+   ▼            └──────────┬──────────┘
+┌──────────────┐           │
+│  Federal     │           ▼
+│  Register    │  ┌───────────────────────────────┐
+│  API (free)  │  │       Anthropic Claude API     │
+└──────────────┘  │    claude-sonnet-4-20250514    │
+                  └───────────────────────────────┘
 ```
 
 ## Why This Exists
