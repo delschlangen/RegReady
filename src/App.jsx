@@ -3,9 +3,20 @@ import Header from './components/Header';
 import TabNav from './components/TabNav';
 import TranslatorTab from './components/TranslatorTab';
 import RiskScorerTab from './components/RiskScorerTab';
+import RadarTab from './components/RadarTab';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('translator');
+  const [prefill, setPrefill] = useState({ translator: '', riskScorer: '' });
+
+  function handleSendToTab(tab, text) {
+    setPrefill((prev) => ({ ...prev, [tab]: text }));
+    setActiveTab(tab);
+  }
+
+  function handleClearPrefill(tab) {
+    setPrefill((prev) => ({ ...prev, [tab]: '' }));
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8f9fa]">
@@ -13,7 +24,15 @@ export default function App() {
       <TabNav activeTab={activeTab} onTabChange={setActiveTab} />
 
       <main className="flex-1">
-        {activeTab === 'translator' ? <TranslatorTab /> : <RiskScorerTab />}
+        {activeTab === 'translator' && (
+          <TranslatorTab prefill={prefill.translator} onClearPrefill={() => handleClearPrefill('translator')} />
+        )}
+        {activeTab === 'riskScorer' && (
+          <RiskScorerTab prefill={prefill.riskScorer} onClearPrefill={() => handleClearPrefill('riskScorer')} />
+        )}
+        {activeTab === 'radar' && (
+          <RadarTab onSendToTab={handleSendToTab} />
+        )}
       </main>
 
       <footer className="border-t border-gray-200 bg-white py-4">

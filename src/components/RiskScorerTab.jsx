@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ExampleSelector from './ExampleSelector';
 import LoadingSpinner from './LoadingSpinner';
 import ResultCard from './ResultCard';
@@ -6,8 +6,15 @@ import RiskBadge from './RiskBadge';
 import { riskScorerExamples } from '../examples/riskScorerExamples';
 import { analyzeInput } from '../utils/api';
 
-export default function RiskScorerTab() {
+export default function RiskScorerTab({ prefill, onClearPrefill }) {
   const [input, setInput] = useState('');
+
+  useEffect(() => {
+    if (prefill) {
+      setInput(prefill);
+      onClearPrefill?.();
+    }
+  }, [prefill]);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
