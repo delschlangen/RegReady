@@ -6,7 +6,7 @@ import RiskScorerTab from './components/RiskScorerTab';
 import RadarTab from './components/RadarTab';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('translator');
+  const [activeTab, setActiveTab] = useState('radar');
   const [prefill, setPrefill] = useState({ translator: '', riskScorer: '' });
 
   function handleSendToTab(tab, text) {

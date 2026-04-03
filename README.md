@@ -14,6 +14,14 @@ RegReady helps product and engineering teams navigate the fast-moving landscape 
 
 Instead of waiting weeks for a legal review, you get a risk classification, regulatory exposure matrix, prioritized engineering requirements, and ready-to-file Jira tickets in seconds.
 
+### Regulatory Radar
+A rolling 30-day dashboard of AI regulatory developments across three data sources:
+- **US State legislation (curated)** — enacted laws from Texas, Colorado, California, Utah, Illinois, and more with accurate dates, summaries, and product impact notes
+- **US Federal (live)** — real-time data from the Federal Register API, auto-summarized by Claude
+- **EU regulatory items (curated)** — AI Act codes of practice, Digital Omnibus proposal, Article 5 guidelines
+- **Filter controls** — filter by jurisdiction, status (Enacted / Proposed / Guidance), and relevance level
+- **Send-to-tab buttons** — send any item directly to the Translator or Risk Scorer for deeper analysis
+
 ### Reg-to-Reqs Translator
 Paste any regulatory provision and get back:
 - **Product impact summary** — plain-English explanation of what the regulation means for your product, with specific affected product areas and risk vectors
@@ -32,7 +40,7 @@ Describe any AI product feature and get back:
 - **Compliant path summary** — whether the system can be deployed as-is, needs modifications, or is fundamentally prohibited, with a description of what a compliant version looks like
 
 ### Pre-Loaded Examples
-Both tools ship with 4 curated examples from real regulations and AI use cases so you can explore immediately without writing your own input.
+The Translator and Risk Scorer each ship with 4 curated examples from real regulations and AI use cases so you can explore immediately without writing your own input.
 
 ---
 
