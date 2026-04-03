@@ -25,6 +25,7 @@ CRITICAL INSTRUCTIONS:
 8. For compliance deadlines, always note both the original effective date AND the current cycle status. Instead of just 'February 17, 2024', output something like 'Originally effective February 17, 2024; annual obligation — next assessment cycle due [year+1 from original].' If the obligation has been in force for more than one cycle, note that this is an ongoing annual requirement, not a future deadline.
 9. If the regulation requires or encourages consultation with external stakeholders (civil society, academics, regulators, consumer organizations), always include this as a separate requirement. Stakeholder engagement is auditable and must be documented.
 10. Always identify downstream DSA or regulatory obligations triggered by the analyzed article. For example, if analyzing Article 34 (risk assessment), flag that Article 35 (mitigation), Article 37 (independent audit), and Article 42(4) (public transparency reporting) are downstream dependencies that engineering and program management need to plan for.
+11. Any requirement that creates a legal safe harbor or affirmative defense against liability must always be rated 'Must Have' — these are defensive compliance measures that directly reduce legal exposure.
 
 RESPONSE SCHEMA:
 {
