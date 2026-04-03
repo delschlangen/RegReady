@@ -97,7 +97,7 @@ export default function RiskScorerTab() {
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="text-left py-2 pr-4 text-xs font-medium text-gray-500 uppercase tracking-wide">Regulation</th>
-                    <th className="text-left py-2 pr-4 text-xs font-medium text-gray-500 uppercase tracking-wide">Applicable</th>
+                    <th className="text-left py-2 pr-4 text-xs font-medium text-gray-500 uppercase tracking-wide">Authority</th>
                     <th className="text-left py-2 pr-4 text-xs font-medium text-gray-500 uppercase tracking-wide">Provisions</th>
                     <th className="text-left py-2 pr-4 text-xs font-medium text-gray-500 uppercase tracking-wide">Risk</th>
                     <th className="text-left py-2 text-xs font-medium text-gray-500 uppercase tracking-wide">Key Obligations</th>
@@ -111,8 +111,13 @@ export default function RiskScorerTab() {
                         <div className="text-xs text-gray-400">{reg.jurisdiction}</div>
                       </td>
                       <td className="py-3 pr-4 align-top">
-                        <span className={`text-xs font-medium ${reg.applicable ? 'text-[#d93025]' : 'text-gray-400'}`}>
-                          {reg.applicable ? 'Yes' : 'No'}
+                        <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
+                          reg.bindingAuthority === 'Binding Law' ? 'bg-red-50 text-[#d93025]' :
+                          reg.bindingAuthority === 'Voluntary Framework' ? 'bg-blue-50 text-blue-600' :
+                          reg.bindingAuthority === 'Regulatory Guidance' ? 'bg-amber-50 text-amber-700' :
+                          'bg-gray-100 text-gray-600'
+                        }`}>
+                          {reg.bindingAuthority || (reg.applicable ? 'Yes' : 'No')}
                         </span>
                       </td>
                       <td className="py-3 pr-4 align-top">
@@ -208,6 +213,80 @@ export default function RiskScorerTab() {
                     <p className="text-xs text-gray-500">Action: {ind.triggerAction}</p>
                   </div>
                 ))}
+              </div>
+            </ResultCard>
+          )}
+
+          {/* Downstream Dependencies */}
+          {result.downstreamDependencies?.length > 0 && (
+            <ResultCard title="Downstream Dependencies">
+              <div className="space-y-3">
+                {result.downstreamDependencies.map((dep, i) => (
+                  <div
+                    key={i}
+                    className="border border-blue-100 rounded-lg overflow-hidden"
+                  >
+                    <div className="border-l-4 border-l-[#1a73e8] bg-[#e8f0fe] p-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-mono text-xs bg-white px-2 py-0.5 rounded border border-blue-200 text-[#1a73e8]">
+                          {dep.article}
+                        </span>
+                      </div>
+                      <p className="text-sm font-medium text-gray-800 mt-1">{dep.obligation}</p>
+                      <p className="text-sm text-gray-600 mt-1">{dep.relevance}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ResultCard>
+          )}
+
+          {/* Compliant Path Summary */}
+          {result.compliantPathSummary && (
+            <ResultCard title="Compliant Path Summary">
+              <div className={`border-l-4 rounded-r-lg p-5 ${
+                result.compliantPathSummary.canBeDeployedAsIs === 'No'
+                  ? 'border-l-[#d93025] bg-red-50'
+                  : result.compliantPathSummary.canBeDeployedAsIs === 'With Modifications'
+                  ? 'border-l-[#34a853] bg-green-50'
+                  : 'border-l-[#34a853] bg-green-50'
+              }`}>
+                <div className="mb-3">
+                  <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold ${
+                    result.compliantPathSummary.canBeDeployedAsIs === 'No'
+                      ? 'bg-[#d93025] text-white'
+                      : result.compliantPathSummary.canBeDeployedAsIs === 'With Modifications'
+                      ? 'bg-[#f9ab00] text-gray-900'
+                      : 'bg-[#34a853] text-white'
+                  }`}>
+                    {result.compliantPathSummary.canBeDeployedAsIs === 'No'
+                      ? 'Cannot Deploy As Described'
+                      : result.compliantPathSummary.canBeDeployedAsIs === 'With Modifications'
+                      ? 'Deployable With Modifications'
+                      : 'Deployable'}
+                  </span>
+                </div>
+
+                {result.compliantPathSummary.criticalBlockers?.length > 0 && (
+                  <div className="mb-3">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Critical Blockers</p>
+                    <ul className="space-y-1">
+                      {result.compliantPathSummary.criticalBlockers.map((b, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                          <span className="text-[#d93025] mt-0.5 shrink-0">&#10005;</span>
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {result.compliantPathSummary.modifiedVersion && (
+                  <div>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Compliant Version</p>
+                    <p className="text-sm text-gray-700">{result.compliantPathSummary.modifiedVersion}</p>
+                  </div>
+                )}
               </div>
             </ResultCard>
           )}
