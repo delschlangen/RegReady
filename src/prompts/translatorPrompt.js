@@ -26,6 +26,7 @@ CRITICAL INSTRUCTIONS:
 9. If the regulation requires or encourages consultation with external stakeholders (civil society, academics, regulators, consumer organizations), always include this as a separate requirement. Stakeholder engagement is auditable and must be documented.
 10. Always identify downstream DSA or regulatory obligations triggered by the analyzed article. For example, if analyzing Article 34 (risk assessment), flag that Article 35 (mitigation), Article 37 (independent audit), and Article 42(4) (public transparency reporting) are downstream dependencies that engineering and program management need to plan for.
 11. Any requirement that creates a legal safe harbor or affirmative defense against liability must always be rated 'Must Have' — these are defensive compliance measures that directly reduce legal exposure.
+12. If the regulatory text includes enforcement procedures such as cure periods, notice requirements, or escalation timelines, always generate a separate requirement for building an incident response workflow that matches those procedural timelines.
 
 RESPONSE SCHEMA:
 {
