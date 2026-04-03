@@ -10,9 +10,9 @@ Turning regulatory complexity into engineering clarity — so your team ships co
 
 ## What RegReady Does
 
-RegReady helps product and engineering teams navigate the fast-moving landscape of global AI regulation. It provides three tools — a regulatory radar for tracking new developments, a translator that converts legal text into engineering requirements, and a risk scorer that evaluates AI product features against global regulatory frameworks.
+RegReady helps product and engineering teams navigate the fast-moving landscape of global AI regulation. It provides four tools — a regulatory radar for tracking new developments, a translator that converts legal text into engineering requirements, a risk scorer that evaluates AI product features against global regulatory frameworks, and a SAIF mapper that maps regulatory obligations to Google's Secure AI Framework.
 
-Instead of waiting weeks for a legal review, you get a rolling regulatory feed, risk classifications, regulatory exposure matrices, prioritized engineering requirements, and ready-to-file Jira tickets in seconds.
+Instead of waiting weeks for a legal review, you get a rolling regulatory feed, risk classifications, framework coverage analysis, prioritized engineering requirements, and ready-to-file Jira tickets in seconds.
 
 ### Regulatory Radar
 A rolling 30-day dashboard of AI regulatory developments across three data sources:
@@ -39,8 +39,16 @@ Describe any AI product feature and get back:
 - **Downstream dependencies** — related regulatory obligations triggered by the risk assessment
 - **Compliant path summary** — whether the system can be deployed as-is, needs modifications, or is fundamentally prohibited, with a description of what a compliant version looks like
 
+### SAIF Mapper
+Map regulatory requirements against Google's publicly available Secure AI Framework (SAIF):
+- **Radar chart** — hexagonal spider chart showing coverage across all 6 SAIF elements with a compliance readiness score
+- **Element mapping matrix** — expandable rows for each SAIF element showing coverage status (Fully Addressed / Partially Addressed / Gap), specific controls, and gaps
+- **Gap recommendations** — prioritized actions to close gaps between SAIF controls and regulatory requirements, with owners and implementation notes
+- **Cross-framework insights** — observations about how SAIF relates to NIST AI RMF, ISO 42001, and other frameworks
+- **"Map to SAIF" buttons** on Translator and Risk Scorer output for seamless cross-tab analysis
+
 ### Pre-Loaded Examples
-The Translator and Risk Scorer each ship with 4 curated examples from real regulations and AI use cases so you can explore immediately without writing your own input.
+Each tab ships with 4 curated examples from real regulations and AI use cases so you can explore immediately without writing your own input.
 
 ---
 
@@ -136,36 +144,37 @@ Vercel should auto-detect the Vite framework. Verify these settings:
 ## Architecture
 
 ```
-┌──────────────────────────────────────────────────────┐
-│                    React Frontend                     │
-│  ┌──────────┐  ┌───────────┐  ┌──────────────────┐  │
-│  │  Radar   │  │ Translator │  │   Risk Scorer    │  │
-│  │   Tab    │  │    Tab     │  │      Tab         │  │
-│  └────┬─────┘  └─────┬─────┘  └────────┬─────────┘  │
-│       │              └────────┬─────────┘            │
-│       │              fetch('/api/analyze')            │
-│       │                       │                      │
-│  fetch('/api/radar-*')        │                      │
-└───────┬───────────────────────┬──────────────────────┘
-        │                       │
-        ▼                       ▼
-┌───────────────────┐  ┌───────────────────────────────┐
-│  Vercel Functions │  │     Vercel Serverless Function │
-│  radar-federal.js │  │         api/analyze.js         │
-│  radar-summarize  │  │  ┌─────────────────────────┐  │
-└──┬────────────┬───┘  │  │  System Prompt (per mode)│  │
-   │            │      │  │  + User Input → Claude   │  │
-   │            │      │  │  → Parse JSON → Return   │  │
-   │            │      │  └─────────────────────────┘  │
-   │            │      └──────────────┬────────────────┘
-   │            │                     │
-   ▼            └──────────┬──────────┘
-┌──────────────┐           │
-│  Federal     │           ▼
-│  Register    │  ┌───────────────────────────────┐
-│  API (free)  │  │       Anthropic Claude API     │
-└──────────────┘  │    claude-sonnet-4-20250514    │
-                  └───────────────────────────────┘
+┌────────────────────────────────────────────────────────────────┐
+│                        React Frontend                          │
+│  ┌────────┐  ┌───────────┐  ┌─────────────┐  ┌────────────┐  │
+│  │ Radar  │  │ Translator │  │ Risk Scorer │  │   SAIF     │  │
+│  │  Tab   │  │    Tab     │  │    Tab      │  │  Mapper    │  │
+│  └───┬────┘  └─────┬─────┘  └──────┬──────┘  └─────┬──────┘  │
+│      │             └────────┬───────┴───────────────┘         │
+│      │            fetch('/api/analyze')                        │
+│      │           mode: translator | riskScorer | saif          │
+│      │                      │                                 │
+│ fetch('/api/radar-*')       │                                 │
+└──────┬──────────────────────┬─────────────────────────────────┘
+       │                      │
+       ▼                      ▼
+┌─────────────────┐  ┌──────────────────────────────────┐
+│ Vercel Functions│  │    Vercel Serverless Function     │
+│ radar-federal   │  │        api/analyze.js             │
+│ radar-summarize │  │  ┌────────────────────────────┐  │
+└──┬──────────┬───┘  │  │ System Prompt (per mode)   │  │
+   │          │      │  │ + User Input → Claude API  │  │
+   │          │      │  │ → Parse JSON → Return      │  │
+   │          │      │  └────────────────────────────┘  │
+   │          │      └───────────────┬──────────────────┘
+   │          │                      │
+   ▼          └───────────┬──────────┘
+┌────────────┐            │
+│  Federal   │            ▼
+│  Register  │  ┌──────────────────────────────┐
+│  API (free)│  │     Anthropic Claude API      │
+└────────────┘  │   claude-sonnet-4-20250514    │
+                └──────────────────────────────┘
 ```
 
 ## Why This Exists

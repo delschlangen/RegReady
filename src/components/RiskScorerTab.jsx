@@ -6,7 +6,7 @@ import RiskBadge from './RiskBadge';
 import { riskScorerExamples } from '../examples/riskScorerExamples';
 import { analyzeInput } from '../utils/api';
 
-export default function RiskScorerTab({ prefill, onClearPrefill }) {
+export default function RiskScorerTab({ prefill, onClearPrefill, onSendToTab }) {
   const [input, setInput] = useState('');
 
   useEffect(() => {
@@ -297,6 +297,18 @@ export default function RiskScorerTab({ prefill, onClearPrefill }) {
                 )}
               </div>
             </ResultCard>
+          )}
+
+          {/* Map to SAIF */}
+          {onSendToTab && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <button
+                onClick={() => onSendToTab('saif', input)}
+                className="text-xs px-4 py-2 bg-[#e8f0fe] text-[#1a73e8] font-medium rounded-lg hover:bg-[#d2e3fc] transition-colors cursor-pointer"
+              >
+                Map to SAIF Framework
+              </button>
+            </div>
           )}
         </div>
       )}

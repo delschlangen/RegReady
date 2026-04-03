@@ -2,6 +2,7 @@ const tabs = [
   { id: 'radar', label: 'Regulatory Radar' },
   { id: 'translator', label: 'Reg \u2192 Reqs Translator' },
   { id: 'riskScorer', label: 'Risk Triage Scorer' },
+  { id: 'saif', label: 'SAIF Mapper' },
 ];
 
 export default function TabNav({ activeTab, onTabChange }) {
