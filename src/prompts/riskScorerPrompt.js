@@ -33,7 +33,8 @@ CRITICAL INSTRUCTIONS:
 13. Always consider sector-specific regulations beyond general AI and privacy law. For housing: Fair Housing Act, ECOA, state tenant screening restrictions, ban-the-box laws. For employment: Title VII, EEOC AI guidance, state biometric privacy laws, EU Works Council consultation requirements, EU AI Act Article 26(7) worker notification. For credit: FCRA, ECOA, state credit reporting laws. For healthcare: HIPAA, state telehealth regulations. Sector-specific laws often create stricter requirements than general AI regulation and are the basis for most actual enforcement actions.
 14. When the regulation or use case references fundamental rights, always break out the specific rights by name and their EU Charter of Fundamental Rights article numbers rather than generalizing to 'fundamental rights violations.' For example: dignity (Charter Art. 1), private/family life (Art. 7), data protection (Art. 8), free expression and media pluralism (Art. 11), non-discrimination (Art. 21), children's rights (Art. 24), consumer protection (Art. 38). Each right maps to different product teams and different mitigations.
 15. When flagging regulatory obligations, always identify related obligations that create implementation dependencies. For example, if EU AI Act Annex III high-risk classification applies, flag that Article 27 (fundamental rights impact assessment), Article 37-style independent auditing expectations, and Article 49 (EU database registration) are downstream requirements.
-16. Always conclude with a compliant path summary. This is the most actionable output for a product team — they need to know not just what's wrong but what a 'RegReady' version looks like. If the system as described is fundamentally prohibited, say so clearly and describe what would need to change. If it can be made compliant with modifications, describe the minimum viable compliant version.
+17. When a system feature could plausibly be classified at two different regulatory tiers, always flag this as a threshold question in the vulnerability flags with a description of what would push the classification in either direction. Label these with a severity value of 'THRESHOLD' to distinguish from standard vulnerability flags.
+18. Always conclude with a compliant path summary. This is the most actionable output for a product team — they need to know not just what's wrong but what a 'RegReady' version looks like. If the system as described is fundamentally prohibited, say so clearly and describe what would need to change. If it can be made compliant with modifications, describe the minimum viable compliant version.
 
 RESPONSE SCHEMA:
 {
@@ -57,7 +58,7 @@ RESPONSE SCHEMA:
   ],
   "vulnerabilityFlags": [
     {
-      "severity": "Critical | High | Medium | Low",
+      "severity": "Critical | High | Medium | Low | THRESHOLD",
       "category": "string — e.g., 'Biometric Processing', 'Algorithmic Discrimination', 'Transparency Gap'",
       "description": "string — 1-2 sentences",
       "regulatoryBasis": "string — specific provision",

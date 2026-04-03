@@ -156,6 +156,7 @@ export default function RiskScorerTab() {
                 <div
                   key={i}
                   className={`border-l-4 rounded-r-lg p-3 ${
+                    flag.severity === 'THRESHOLD' ? 'border-l-[#9334e6] bg-purple-50' :
                     flag.severity === 'Critical' ? 'border-l-gray-900 bg-gray-50' :
                     flag.severity === 'High' ? 'border-l-[#d93025] bg-red-50' :
                     flag.severity === 'Medium' ? 'border-l-[#f9ab00] bg-amber-50' :
