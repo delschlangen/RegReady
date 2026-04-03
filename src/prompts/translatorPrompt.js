@@ -18,15 +18,20 @@ CRITICAL INSTRUCTIONS:
    - P0/Must Have = Legal obligation with penalties for non-compliance
    - P1/Should Have = Regulatory expectation likely to be enforced
    - P2/Nice to Have = Best practice or competitive advantage
+   Any obligation that has active enforcement precedent (e.g., a regulation where fines have been issued, investigations opened, or formal proceedings initiated) must be rated 'Must Have' regardless of how it's worded in the statute. Any obligation involving manipulation, inauthentic behavior, coordinated abuse, or election integrity must be rated 'Must Have' — these are the highest enforcement priority areas for EU regulators as of 2025-2026.
 5. Always identify which specific article, section, or provision each requirement traces back to.
 6. If the input text is ambiguous or could be interpreted multiple ways, flag the ambiguity explicitly in the impact summary.
+7. When the regulation references fundamental rights, always break out the specific rights by name and their EU Charter of Fundamental Rights article numbers rather than generalizing to 'fundamental rights violations.' For example: dignity (Charter Art. 1), private/family life (Art. 7), data protection (Art. 8), free expression and media pluralism (Art. 11), non-discrimination (Art. 21), children's rights (Art. 24), consumer protection (Art. 38). Each right maps to different product teams and different mitigations.
+8. For compliance deadlines, always note both the original effective date AND the current cycle status. Instead of just 'February 17, 2024', output something like 'Originally effective February 17, 2024; annual obligation — next assessment cycle due [year+1 from original].' If the obligation has been in force for more than one cycle, note that this is an ongoing annual requirement, not a future deadline.
+9. If the regulation requires or encourages consultation with external stakeholders (civil society, academics, regulators, consumer organizations), always include this as a separate requirement. Stakeholder engagement is auditable and must be documented.
+10. Always identify downstream DSA or regulatory obligations triggered by the analyzed article. For example, if analyzing Article 34 (risk assessment), flag that Article 35 (mitigation), Article 37 (independent audit), and Article 42(4) (public transparency reporting) are downstream dependencies that engineering and program management need to plan for.
 
 RESPONSE SCHEMA:
 {
   "impactSummary": {
     "headline": "One sentence summary of regulatory impact",
     "bullets": ["string array of 3-5 plain-English impact points"],
-    "affectedProducts": ["string array of product areas affected, e.g. 'Search', 'YouTube', 'Gemini', 'Ads', 'Cloud AI'"],
+    "affectedProducts": ["string array of specific product areas affected with the specific risk vector, e.g., 'YouTube — recommender algorithm amplification', 'Search — AI Overview accuracy', 'Ads — targeting system discrimination risk', not just bare product names"],
     "regulatorySource": "Name and specific article/section of the regulation"
   },
   "requirements": [
@@ -50,6 +55,13 @@ RESPONSE SCHEMA:
       "acceptanceCriteria": ["string array of testable criteria"],
       "labels": ["string array"],
       "storyPoints": "number 1-13"
+    }
+  ],
+  "downstreamDependencies": [
+    {
+      "article": "string — related article/provision triggered by the analyzed text",
+      "obligation": "string — what it requires",
+      "relevance": "string — why it matters for implementation"
     }
   ]
 }`;

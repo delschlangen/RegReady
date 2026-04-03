@@ -131,6 +131,29 @@ export default function TranslatorTab() {
               <JiraTicket key={i} ticket={ticket} />
             ))}
           </ResultCard>
+
+          {result.downstreamDependencies?.length > 0 && (
+            <ResultCard title="Downstream Dependencies">
+              <div className="space-y-3">
+                {result.downstreamDependencies.map((dep, i) => (
+                  <div
+                    key={i}
+                    className="border border-blue-100 rounded-lg overflow-hidden"
+                  >
+                    <div className="border-l-4 border-l-[#1a73e8] bg-[#e8f0fe] p-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-mono text-xs bg-white px-2 py-0.5 rounded border border-blue-200 text-[#1a73e8]">
+                          {dep.article}
+                        </span>
+                      </div>
+                      <p className="text-sm font-medium text-gray-800 mt-1">{dep.obligation}</p>
+                      <p className="text-sm text-gray-600 mt-1">{dep.relevance}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ResultCard>
+          )}
         </div>
       )}
     </div>
