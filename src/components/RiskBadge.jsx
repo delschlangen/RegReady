@@ -6,6 +6,7 @@ const tierColors = {
 };
 
 const severityColors = {
+  'THRESHOLD': 'bg-[#9334e6] text-white',
   'Critical': 'bg-gray-900 text-white',
   'High': 'bg-[#d93025] text-white',
   'Medium': 'bg-[#f9ab00] text-gray-900',
