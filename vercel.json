@@ -6,6 +6,12 @@
   "functions": {
     "api/analyze.js": {
       "maxDuration": 60
+    },
+    "api/radar-federal.js": {
+      "maxDuration": 15
+    },
+    "api/radar-summarize.js": {
+      "maxDuration": 30
     }
   }
 }

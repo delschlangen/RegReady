@@ -1,6 +1,7 @@
 const tabs = [
   { id: 'translator', label: 'Reg \u2192 Reqs Translator' },
   { id: 'riskScorer', label: 'Risk Triage Scorer' },
+  { id: 'radar', label: 'Regulatory Radar' },
 ];
 
 export default function TabNav({ activeTab, onTabChange }) {
