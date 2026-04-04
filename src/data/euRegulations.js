@@ -51,4 +51,17 @@ export const euRegulations = [
     productImpact: 'Critical for any AI system that could be interpreted as manipulative, exploitative, or involving biometric identification in the EU.',
     source: 'curated',
   },
+  {
+    id: 'eu-005',
+    jurisdiction: 'International (ISO/IEC)',
+    jurisdictionType: 'EU',
+    title: 'ISO/IEC 42005:2025 — AI System Impact Assessment',
+    status: 'Published',
+    date: '2025-05-01',
+    url: 'https://www.iso.org/standard/44545.html',
+    summary: 'First international standard providing a structured 10-step methodology for conducting AI system impact assessments. Complements ISO/IEC 42001 (AI management systems) and directly aligns with EU AI Act fundamental rights impact assessment requirements under Article 27. Covers identification of affected stakeholders, assessment of impacts on individuals and groups, and documentation of mitigation measures.',
+    relevance: 'High',
+    productImpact: 'Provides the standard methodology for AI impact assessments required by the EU AI Act and referenced by multiple national AI regulations.',
+    source: 'curated',
+  },
 ];

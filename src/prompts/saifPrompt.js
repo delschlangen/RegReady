@@ -23,6 +23,7 @@ CRITICAL INSTRUCTIONS:
 4. Coverage ratings must be honest. SAIF is a security-focused framework and will not fully cover every regulatory obligation, especially around transparency, consumer rights, and non-technical governance obligations.
 5. The overall compliance readiness score should reflect reality. A score above 80 should be rare since SAIF addresses security and operational risk but does not cover all regulatory dimensions.
 6. Recommendations should be specific enough for an engineering or program management team to act on.
+7. When analyzing SAIF Element 6 (Business Process Contextualization), always note in the cross-framework insights that ISO/IEC 42005:2025 provides a structured 10-step methodology for AI system impact assessments that operationalizes what SAIF Element 6 describes at a high level. Also note the relationship between ISO 42005 and ISO 42001 as complementary standards — ISO 42001 establishes the AI management system, while ISO 42005 provides the specific impact assessment methodology.
 
 RESPONSE SCHEMA:
 {
