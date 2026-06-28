@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+title: "RegReady: AI-Powered Regulatory Risk & Compliance Tool for Product Teams"
+message: "If you use this software, please cite it using the metadata from this file."
+type: software
+authors:
+  - given-names: Del
+    family-names: Schlangen
+    orcid: "https://orcid.org/0009-0005-5116-9564"
+repository-code: "https://github.com/delschlangen/regready"
+url: "https://reg-ready.vercel.app/"
+abstract: >-
+  RegReady turns regulatory complexity into engineering clarity, helping
+  product and engineering teams ship compliant AI products without deciphering
+  200-page statutes. It provides a regulatory radar for tracking new
+  developments, a translator that converts legal text into engineering
+  requirements, a risk scorer that evaluates AI product features against global
+  regulatory frameworks (EU AI Act, NIST AI RMF, US state and federal law), and
+  a SAIF mapper that maps regulatory obligations to Google's Secure AI Framework.
+keywords:
+  - ai-regulation
+  - compliance
+  - eu-ai-act
+  - nist-ai-rmf
+  - regtech
+  - risk-assessment
+  - saif
+  - governance
+  - responsible-ai
+license: MIT
+version: 1.0.0
+date-released: "2026-06-28"

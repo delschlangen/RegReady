@@ -2,9 +2,17 @@
 
 **AI-Powered Regulatory Risk & Compliance Tool for Product Teams**
 
-Turning regulatory complexity into engineering clarity — so your team ships compliant AI products without deciphering 200-page statutes.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Made with React](https://img.shields.io/badge/React-19-61DAFB.svg?logo=react&logoColor=white)](https://react.dev/)
+[![Powered by Claude](https://img.shields.io/badge/AI-Claude-D97757.svg)](https://www.anthropic.com/)
+[![Deployed on Vercel](https://img.shields.io/badge/Deploy-Vercel-000000.svg?logo=vercel)](https://reg-ready.vercel.app/)
+[![Cite this repo](https://img.shields.io/badge/Cite-CITATION.cff-success.svg)](CITATION.cff)
 
-[**Try it Live**](https://reg-ready.vercel.app/)  |  [View Source](https://github.com/delschlangen/regready)
+RegReady is an **AI regulatory compliance and risk-assessment platform** for AI product and engineering teams. It maps features and legal text against the **EU AI Act**, **NIST AI RMF**, **US state and federal AI law**, and **Google's Secure AI Framework (SAIF)** — turning regulatory complexity into engineering clarity so your team ships compliant AI products without deciphering 200-page statutes.
+
+**Keywords:** AI governance · RegTech · EU AI Act compliance · NIST AI RMF · AI risk assessment · responsible AI · regulatory intelligence · SAIF mapping.
+
+[**Try it Live**](https://reg-ready.vercel.app/)  |  [View Source](https://github.com/delschlangen/regready)  |  [Cite RegReady](CITATION.cff)
 
 ---
 
@@ -185,6 +193,19 @@ Regulatory compliance in AI is one of the most pressing challenges facing techno
 
 This tool is for demonstration and educational purposes. It does not constitute legal advice. Always consult qualified legal counsel for compliance decisions.
 
+## Citation
+
+If you use RegReady in your research, product, or compliance workflow, please cite it. Citation metadata is provided in [`CITATION.cff`](CITATION.cff) (GitHub renders a **"Cite this repository"** button from it).
+
+```
+Schlangen, D. (2026). RegReady: AI-Powered Regulatory Risk & Compliance Tool
+for Product Teams [Computer software]. https://github.com/delschlangen/regready
+```
+
+ORCID: [0009-0005-5116-9564](https://orcid.org/0009-0005-5116-9564)
+
 ## License
 
-MIT
+RegReady is released under the **MIT License** — see the [LICENSE](LICENSE) file for the full text.
+
+Copyright (c) 2026 Del Schlangen.
