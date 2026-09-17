@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import TabNav from './components/TabNav';
 import TranslatorTab from './components/TranslatorTab';
@@ -9,6 +9,18 @@ import SaifTab from './components/SaifTab';
 export default function App() {
   const [activeTab, setActiveTab] = useState('radar');
   const [prefill, setPrefill] = useState({ translator: '', riskScorer: '', saif: '' });
+
+  // Per-tab titles so a bookmarked or shared tab is identifiable, and so
+  // browser history reads as something other than four identical entries.
+  useEffect(() => {
+    const titles = {
+      radar: 'Regulatory Radar',
+      translator: 'Reg \u2192 Reqs Translator',
+      riskScorer: 'Risk Triage Scorer',
+      saif: 'SAIF Mapper',
+    };
+    document.title = `${titles[activeTab] || 'RegReady'} \u2014 RegReady`;
+  }, [activeTab]);
 
   function handleSendToTab(tab, text) {
     setPrefill((prev) => ({ ...prev, [tab]: text }));
