@@ -1,190 +1,165 @@
+<div align="center">
+
 # RegReady
 
-**AI-Powered Regulatory Risk & Compliance Tool for Product Teams**
+**Turn AI regulation into risk classifications, engineering requirements and framework gap analysis — in seconds instead of a legal review cycle.**
 
-Turning regulatory complexity into engineering clarity — so your team ships compliant AI products without deciphering 200-page statutes.
+[**Try it live →**](https://reg-ready.vercel.app/)
 
-[**Try it Live**](https://reg-ready.vercel.app/)  |  [View Source](https://github.com/delschlangen/regready)
+[![CI](https://github.com/delschlangen/regready/actions/workflows/ci.yml/badge.svg)](https://github.com/delschlangen/regready/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Built with Claude](https://img.shields.io/badge/built%20with-Claude%20API-1a73e8)](https://www.anthropic.com/api)
+
+</div>
 
 ---
 
-## What RegReady Does
+Compliance teams and product teams speak different languages. A regulation says
+"deployers of high-risk AI systems shall implement human oversight measures";
+an engineer needs to know which service to change, by when, and what "done"
+looks like. RegReady closes that gap in both directions — and tracks what
+changed while you weren't looking.
 
-RegReady helps product and engineering teams navigate the fast-moving landscape of global AI regulation. It provides four tools — a regulatory radar for tracking new developments, a translator that converts legal text into engineering requirements, a risk scorer that evaluates AI product features against global regulatory frameworks, and a SAIF mapper that maps regulatory obligations to Google's Secure AI Framework.
+<p align="center">
+  <img src="docs/risk-scorer.png" alt="Risk Triage Scorer showing a High Risk classification for an AI resume screening tool, with a regulatory exposure matrix separating binding law from voluntary frameworks, and a THRESHOLD flag marking the tier boundary" width="900">
+</p>
 
-Instead of waiting weeks for a legal review, you get a rolling regulatory feed, risk classifications, framework coverage analysis, prioritized engineering requirements, and ready-to-file Jira tickets in seconds.
+## What it does
 
 ### Regulatory Radar
-A rolling 30-day dashboard of AI regulatory developments across three data sources:
-- **US State legislation (curated)** — enacted laws from Texas, Colorado, California, Utah, Illinois, and more with accurate dates, summaries, and product impact notes
-- **US Federal (live)** — real-time data from the Federal Register API, auto-summarized by Claude
-- **EU regulatory items (curated)** — AI Act codes of practice, Digital Omnibus proposal, Article 5 guidelines
-- **Filter controls** — filter by jurisdiction, status (Enacted / Proposed / Guidance), and relevance level
-- **Send-to-tab buttons** — send any item directly to the Translator or Risk Scorer for deeper analysis
+A curated timeline of AI regulatory milestones plus the last 30 days of US
+federal activity from the Federal Register.
 
-### Reg-to-Reqs Translator
-Paste any regulatory provision and get back:
-- **Product impact summary** — plain-English explanation of what the regulation means for your product, with specific affected product areas and risk vectors
-- **Engineering requirements** — structured, prioritized requirements (Must Have / Should Have / Nice to Have) with regulatory traceability and compliance deadlines
-- **Implementation tickets** — mock Jira tickets with acceptance criteria, story points, and labels that an engineer can start working from immediately
-- **Downstream dependencies** — related regulatory obligations triggered by the analyzed provision that engineering and program management need to plan for
+Every curated entry is hand-verified, dated, and cites its sources — and
+crucially, it says when a law **is no longer in force**. Colorado SB 24-205 is
+listed as repealed (SB 26-189 replaced it, effective 2027-01-01); California
+AB 2655 is listed as enjoined. Status badges are computed from the dates, so a
+card reads "In force" or "In 12 days" rather than a hand-typed label that
+goes stale the moment a deadline passes.
+
+### Reg → Reqs Translator
+Paste a provision. Get the product impact in plain English, prioritised
+engineering requirements traced back to the article, and ready-to-file tickets
+with acceptance criteria, labels and story points.
 
 ### Risk Triage Scorer
-Describe any AI product feature and get back:
-- **Risk classification** — EU AI Act tier (Unacceptable / High Risk / Limited Risk / Minimal Risk) with confidence calibration and regulatory basis
-- **Regulatory exposure matrix** — multi-jurisdictional analysis with binding authority classification (Binding Law, Voluntary Framework, Regulatory Guidance, or Enforcement Precedent Only)
-- **Vulnerability flags** — color-coded by severity (Critical / High / Medium / Low), with a dedicated **THRESHOLD** flag for features sitting at regulatory tier boundaries
-- **Compounding risk analysis** — where multiple regulations create overlapping obligations
-- **Recommended actions** — prioritized (P0–P3) with suggested owners and timelines
-- **Downstream dependencies** — related regulatory obligations triggered by the risk assessment
-- **Compliant path summary** — whether the system can be deployed as-is, needs modifications, or is fundamentally prohibited, with a description of what a compliant version looks like
+Describe an AI feature. Get an EU AI Act risk tier with calibrated confidence,
+a multi-jurisdiction exposure matrix that **separates binding law from voluntary
+frameworks**, compounding-risk analysis where regulations overlap, and a
+concrete path to a compliant version.
+
+Features sitting on a tier boundary get a dedicated `THRESHOLD` flag describing
+what would push the classification either way — because "it depends" is often
+the honest answer, and burying it helps nobody.
 
 ### SAIF Mapper
-Map regulatory requirements against Google's publicly available Secure AI Framework (SAIF):
-- **Radar chart** — hexagonal spider chart showing coverage across all 6 SAIF elements with a compliance readiness score
-- **Element mapping matrix** — expandable rows for each SAIF element showing coverage status (Fully Addressed / Partially Addressed / Gap), specific controls, and gaps
-- **Gap recommendations** — prioritized actions to close gaps between SAIF controls and regulatory requirements, with owners and implementation notes
-- **Cross-framework insights** — observations about how SAIF relates to NIST AI RMF, ISO 42001, and other frameworks
-- **"Map to SAIF" buttons** on Translator and Risk Scorer output for seamless cross-tab analysis
+Map a provision against the six elements of Google's Secure AI Framework: which
+are fully addressed, which partially, and where the gaps are.
 
-### Pre-Loaded Examples
-Each tab ships with 4 curated examples from real regulations and AI use cases so you can explore immediately without writing your own input.
+SAIF is a *security* framework, so it will not cover every regulatory
+obligation — the tool says so rather than inflating the score. Transparency,
+consumer rights and non-technical governance duties routinely show as gaps, and
+the cross-framework section explains where NIST AI RMF, ISO/IEC 42001 and
+ISO/IEC 42005 pick up the slack.
 
----
+<p align="center">
+  <img src="docs/radar.png" alt="Regulatory Radar showing curated AI regulatory milestones with computed lifecycle badges, jurisdiction filters and per-source freshness" width="900">
+</p>
 
-## Regulatory Frameworks Covered
+## Taking results with you
 
-| Framework | Jurisdiction | Coverage |
+Every analysis exports as **Markdown**, **JSON**, or a printed PDF, so a risk
+assessment can go straight into a ticket, a doc or a review packet. Exports
+carry the source link and the not-legal-advice line, so a pasted result stays
+attributed.
+
+Tabs are addressable — `?tab=saif` deep-links — and results persist while you
+move between tabs, so the cross-tab handoffs ("Score this regulation's risk",
+"Turn these SAIF gaps into requirements") don't cost you the analysis you were
+reading.
+
+## Coverage
+
+| Framework | Jurisdiction | Notes |
 |---|---|---|
-| **EU AI Act** (Regulation 2024/1689) | EU | Full risk classification (Annex III), prohibited practices (Art. 5), transparency, fundamental rights |
-| **Digital Services Act** (Regulation 2022/2065) | EU | VLOP/VLOSE obligations, content moderation, systemic risk |
-| **NIST AI RMF 1.0** | US (Federal) | Voluntary risk management framework, safe harbor implications |
-| **Colorado AI Act** (SB 24-205) | US (State) | Algorithmic discrimination, high-risk AI system requirements |
-| **Texas TRAIGA** (H.B. 149, 2025) | US (State) | Prohibited practices, discrimination, social scoring |
-| **California AI Bills** | US (State) | Transparency and disclosure requirements |
-| **FTC Enforcement** | US (Federal) | Enforcement actions on AI/automated decision-making |
-| **Sector-Specific** | Multi | HIPAA (health AI), FCRA/ECOA (credit AI), Fair Housing Act, Title VII (employment AI) |
+| **EU AI Act** (2024/1689) | EU | Art. 5 prohibitions, Annex III high-risk, Art. 50 transparency, Art. 27 FRIA. High-risk deadlines reflect the Digital Omnibus deferral (Annex III → 2027-12-02, Annex I → 2028-08-02) |
+| **Digital Services Act** (2022/2065) | EU | VLOP/VLOSE systemic risk and mitigation |
+| **Colorado SB 26-189** | US state | Replaced the repealed SB 24-205; effective 2027-01-01 |
+| **Texas TRAIGA** (H.B. 149) | US state | In force since 2026-01-01 |
+| **California SB 53 / TFAIA** | US state | Frontier-model transparency, in force 2026-01-01 |
+| **California SB 942** (as amended by AB 853) | US state | Operative 2026-08-02 |
+| **New York RAISE Act** (as amended) | US state | 72-hour incident reporting, effective 2027-01-01 |
+| **Illinois HB 3773** | US state | AI in employment, in force 2026-01-01 |
+| **NIST AI RMF 1.0** | US | Voluntary; safe-harbour relevance under TRAIGA |
+| **ISO/IEC 42005:2025** | International | AI impact assessment methodology |
+| **Google SAIF** | — | Six-element security framework |
+| **Sector-specific** | Multi | HIPAA, FCRA/ECOA, Fair Housing Act, Title VII |
 
----
+Curated regulatory data is verified as of the date shown in the app and on each
+card. **This is not legal advice** — verify against the primary text before
+relying on it.
 
-## Tech Stack
-
-- **Frontend:** React 19 + Vite + Tailwind CSS v4
-- **Backend:** Vercel Serverless Functions
-- **AI:** Anthropic Claude API (claude-sonnet-4-20250514)
-- **Live Data:** Federal Register API (free, no key required)
-- **Deployment:** Vercel
-- **Font:** Inter (Google Fonts)
-
-## Getting Started
-
-### Prerequisites
-- Node.js 18+
-- An Anthropic API key
-
-### Local Development
+## Running it yourself
 
 ```bash
-# Clone the repo
 git clone https://github.com/delschlangen/regready.git
 cd regready
-
-# Install dependencies
 npm install
 
-# Add your API key
-cp .env.example .env.local
-# Edit .env.local and add your ANTHROPIC_API_KEY
+cp .env.example .env.local   # add your ANTHROPIC_API_KEY
 
-# Start with Vercel CLI (recommended — handles serverless functions)
-npm i -g vercel
-vercel dev
+npx vercel dev               # serves the app and the /api functions
 ```
 
-Alternatively, use `npm run dev` for frontend-only development (API calls require the Vercel dev server or a deployed backend).
+`npm run dev` runs the frontend alone; the analysis tabs need the serverless
+functions, so use `vercel dev` for the full app.
 
-## Deployment to Vercel
-
-### Step 1: Connect Your GitHub Repo
-1. Go to [vercel.com](https://vercel.com) and sign in (or sign up) with your GitHub account
-2. Click **"Add New..."** > **"Project"** from the dashboard
-3. You'll see a list of your GitHub repos — find **regready** and click **"Import"**
-
-### Step 2: Configure Build Settings
-Vercel should auto-detect the Vite framework. Verify these settings:
-- **Framework Preset:** Vite
-- **Build Command:** `npm run build`
-- **Output Directory:** `dist`
-- **Install Command:** `npm install`
-
-### Step 3: Add Environment Variables
-1. On the same deployment page, expand **"Environment Variables"**
-2. Add the following:
-   - **Key:** `ANTHROPIC_API_KEY`
-   - **Value:** Your Anthropic API key (starts with `sk-ant-`)
-3. Make sure it's enabled for **Production**, **Preview**, and **Development**
-4. Click **"Add"**
-
-### Step 4: Deploy
-1. Click **"Deploy"**
-2. Wait for the build to complete (usually under 60 seconds)
-3. Vercel will give you a URL like `regready-xxxx.vercel.app`
-
-### Step 5: Verify
-1. Visit your deployment URL
-2. Select an example from the dropdown and click the action button
-3. You should see real AI-generated analysis appear after a few seconds
-
-### Custom Domain (Optional)
-1. Go to your project's **Settings** > **Domains**
-2. Type your custom domain and click **"Add"**
-3. Vercel will show you DNS records to add at your domain registrar
-4. Add the records and wait for DNS propagation (usually minutes, sometimes hours)
-
-## Architecture
-
-```
-┌────────────────────────────────────────────────────────────────┐
-│                        React Frontend                          │
-│  ┌────────┐  ┌───────────┐  ┌─────────────┐  ┌────────────┐  │
-│  │ Radar  │  │ Translator │  │ Risk Scorer │  │   SAIF     │  │
-│  │  Tab   │  │    Tab     │  │    Tab      │  │  Mapper    │  │
-│  └───┬────┘  └─────┬─────┘  └──────┬──────┘  └─────┬──────┘  │
-│      │             └────────┬───────┴───────────────┘         │
-│      │            fetch('/api/analyze')                        │
-│      │           mode: translator | riskScorer | saif          │
-│      │                      │                                 │
-│ fetch('/api/radar-*')       │                                 │
-└──────┬──────────────────────┬─────────────────────────────────┘
-       │                      │
-       ▼                      ▼
-┌─────────────────┐  ┌──────────────────────────────────┐
-│ Vercel Functions│  │    Vercel Serverless Function     │
-│ radar-federal   │  │        api/analyze.js             │
-│ radar-summarize │  │  ┌────────────────────────────┐  │
-└──┬──────────┬───┘  │  │ System Prompt (per mode)   │  │
-   │          │      │  │ + User Input → Claude API  │  │
-   │          │      │  │ → Parse JSON → Return      │  │
-   │          │      │  └────────────────────────────┘  │
-   │          │      └───────────────┬──────────────────┘
-   │          │                      │
-   ▼          └───────────┬──────────┘
-┌────────────┐            │
-│  Federal   │            ▼
-│  Register  │  ┌──────────────────────────────┐
-│  API (free)│  │     Anthropic Claude API      │
-└────────────┘  │   claude-sonnet-4-20250514    │
-                └──────────────────────────────┘
+```bash
+npm test          # prompt-drift, curated-data and export guards (no API calls)
+npm run build     # production build
+npm run og        # regenerate the social preview image
+npm run shots     # regenerate the README screenshots
 ```
 
-## Why This Exists
+Deploying your own instance: [docs/DEPLOY.md](docs/DEPLOY.md).
 
-Regulatory compliance in AI is one of the most pressing challenges facing technology companies today. Teams struggle to translate dense legal text into actionable engineering work, creating a bottleneck between legal/policy teams and product delivery. RegReady demonstrates how AI itself can close that gap — turning regulatory provisions into structured requirements, risk assessments, and implementation plans that engineering teams can act on immediately.
+`ANTHROPIC_MODEL` overrides the model (default `claude-sonnet-5`).
 
-## Disclaimer
+## How it fits together
 
-This tool is for demonstration and educational purposes. It does not constitute legal advice. Always consult qualified legal counsel for compliance decisions.
+```
+                        React (Vite + Tailwind)
+   ┌──────────┬──────────────┬───────────────┬──────────────┐
+   │  Radar   │  Translator  │  Risk Scorer  │ SAIF Mapper  │
+   └────┬─────┴───────┬──────┴───────┬───────┴──────┬───────┘
+        │             └──────────────┼──────────────┘
+        │                    POST /api/analyze
+        │              mode: translator | riskScorer | saif
+        │                            │
+        ├── GET  /api/radar-federal  │   ← Federal Register API (free)
+        └── POST /api/radar-summarize│
+                     │               │
+                     ▼               ▼
+          ┌──────────────────────────────────────┐
+          │      Vercel serverless functions     │
+          │  api/_lib/claude.js — shared client, │
+          │  cached system prompts, JSON parsing │
+          └──────────────────┬───────────────────┘
+                             ▼
+                   Anthropic Claude API
+```
 
-## License
+The system prompts live in `src/prompts/` and are **imported** by the API — they
+used to be duplicated inline, drifted, and several rules never reached
+production. `npm test` now asserts reference equality so that cannot recur.
 
-MIT
+## Why it exists
+
+AI regulation is moving faster than compliance teams can read it, and the
+translation layer between "what the law says" and "what to build" is where
+programs stall. RegReady is a working demonstration that the translation can be
+largely automated — and that the hard part is not summarising the law, it's
+being honest about what is in force, what is contested, and what a framework
+genuinely does not cover.
+
+Built by Del Schlangen. MIT licensed.
