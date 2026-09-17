@@ -38,9 +38,18 @@ Article 35 — Mitigation of risks
 Providers of very large online platforms and of very large online search engines shall put in place reasonable, proportionate and effective mitigation measures, tailored to the specific systemic risks identified pursuant to Article 34, with particular consideration to the impacts of such measures on fundamental rights.`,
   },
   {
-    label: 'Colorado AI Act — Algorithmic Discrimination Prevention',
-    text: `A developer or deployer of a high-risk artificial intelligence system shall use reasonable care to protect consumers from any known or reasonably foreseeable risks of algorithmic discrimination arising from the intended and contracted uses of the high-risk artificial intelligence system.
+    label: 'EU AI Act — Article 27 (Fundamental Rights Impact Assessment)',
+    text: `Article 27 — Fundamental rights impact assessment for high-risk AI systems
 
-A deployer shall implement a risk management policy and program to govern the deployment of high-risk artificial intelligence systems. The risk management policy and program must specify and incorporate the principles, processes, and personnel that the deployer uses to identify, document, and mitigate known or reasonably foreseeable risks of algorithmic discrimination.`,
+Prior to deploying a high-risk AI system referred to in Article 6(2), with the exception of high-risk AI systems intended to be used in the area listed in point 2 of Annex III, deployers that are bodies governed by public law, or are private entities providing public services, and deployers of high-risk AI systems referred to in points 5(b) and (c) of Annex III, shall perform an assessment of the impact on fundamental rights that the use of such system may produce. For that purpose, deployers shall perform an assessment consisting of:
+
+(a) a description of the deployer's processes in which the high-risk AI system will be used in line with its intended purpose;
+(b) a description of the period of time within which, and the frequency with which, each high-risk AI system is intended to be used;
+(c) the categories of natural persons and groups likely to be affected by its use in the specific context;
+(d) the specific risks of harm likely to have an impact on the categories of natural persons or groups of persons identified pursuant to point (c) of this paragraph, taking into account the information given by the provider pursuant to Article 13;
+(e) a description of the implementation of human oversight measures, according to the instructions for use;
+(f) the measures to be taken in the case of the materialisation of those risks, including the arrangements for internal governance and complaint mechanisms.
+
+Where any of the obligations laid down in this Article is already met through the data protection impact assessment conducted pursuant to Article 35 of Regulation (EU) 2016/679, the fundamental rights impact assessment referred to in paragraph 1 of this Article shall complement that data protection impact assessment.`,
   },
 ];

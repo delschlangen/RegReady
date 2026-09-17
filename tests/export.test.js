@@ -159,3 +159,31 @@ test('filenames are slugged and bounded', () => {
   const long = filenameFor('saif', { regulatoryContext: { regulation: 'x'.repeat(200) } });
   assert.ok(long.length < 70, 'filename should be bounded');
 });
+
+// The bundled examples are the demo path a first-time visitor clicks. If they
+// quote repealed law, the tool demonstrates itself producing wrong analysis.
+test('bundled examples do not quote superseded law as current', async () => {
+  const mods = await Promise.all([
+    import('../src/examples/translatorExamples.js'),
+    import('../src/examples/riskScorerExamples.js'),
+    import('../src/examples/saifExamples.js'),
+  ]);
+  const all = [
+    ...mods[0].translatorExamples,
+    ...mods[1].riskScorerExamples,
+    ...mods[2].saifExamples,
+  ];
+  assert.ok(all.length >= 12, 'expected four examples per tab');
+  for (const ex of all) {
+    assert.ok(ex.label, 'example needs a label');
+    assert.ok(ex.text?.length > 100, `${ex.label}: example text too short`);
+    const cites = /SB 24-205|SB 205\b/.test(`${ex.label} ${ex.text}`);
+    if (cites) {
+      assert.match(
+        `${ex.label} ${ex.text}`,
+        /repeal|superseded|SB 26-189/i,
+        `${ex.label} quotes the repealed Colorado AI Act without saying so`,
+      );
+    }
+  }
+});

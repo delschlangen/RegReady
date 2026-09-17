@@ -9,7 +9,7 @@ import ExportBar from './ExportBar';
 import { saifExamples } from '../examples/saifExamples';
 import { analyzeInput } from '../utils/api';
 
-export default function SaifTab({ prefill, onClearPrefill }) {
+export default function SaifTab({ prefill, onClearPrefill, onSendToTab }) {
   const [input, setInput] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -142,6 +142,22 @@ export default function SaifTab({ prefill, onClearPrefill }) {
                 ))}
               </div>
             </ResultCard>
+          )}
+
+          {onSendToTab && result.overallAssessment?.criticalGaps?.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <button
+                onClick={() =>
+                  onSendToTab(
+                    'translator',
+                    `Turn these SAIF coverage gaps into engineering requirements.\n\nRegulation: ${result.regulatoryContext?.regulation || 'the analysed provision'}\n\nGaps SAIF does not cover:\n${result.overallAssessment.criticalGaps.map((g) => `- ${g}`).join('\n')}`,
+                  )
+                }
+                className="text-xs px-4 py-2 bg-[#e8f0fe] text-[#1a73e8] font-medium rounded-lg hover:bg-[#d2e3fc] transition-colors cursor-pointer"
+              >
+                Turn gaps into requirements
+              </button>
+            </div>
           )}
         </div>
       )}
