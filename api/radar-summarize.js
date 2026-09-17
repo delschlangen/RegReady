@@ -1,57 +1,57 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { client, MODEL, extractText, parseJsonLoose, toClientError, UpstreamError } from './_lib/claude.js';
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const systemPrompt = `Given a legislative or regulatory item title and abstract, provide a JSON response with three fields: "summary" (2-3 sentence plain language explanation), "relevance" (High, Medium, or Low — how relevant is this to an organization building or deploying AI products), and "productImpact" (one sentence on which product areas are affected). Respond only in valid JSON.`;
 
-const systemPrompt = `Given a legislative or regulatory item title and abstract, provide a JSON response with three fields: "summary" (2-3 sentence plain language explanation), "relevance" (High, Medium, or Low — how relevant is this to a major technology company building AI products), and "productImpact" (one sentence on which product areas are affected). Respond only in valid JSON.`;
+const MAX_FIELD = 4000;
+
+function clamp(value, max = MAX_FIELD) {
+  return typeof value === 'string' ? value.slice(0, max) : '';
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Method not allowed', code: 'method_not_allowed' });
   }
 
-  const { title, abstract, jurisdiction } = req.body;
+  const { title, abstract, jurisdiction } = req.body || {};
 
-  if (!title) {
-    return res.status(400).json({ error: 'Missing required field: title' });
+  if (typeof title !== 'string' || !title.trim()) {
+    return res.status(400).json({
+      error: 'Missing required field: title',
+      code: 'missing_fields',
+    });
   }
 
   try {
     const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 300,
-      system: systemPrompt,
+      model: MODEL,
+      // Summarisation is a low-effort task, but adaptive thinking draws from the
+      // same budget as the answer — leave headroom so the text block survives.
+      max_tokens: 2000,
+      output_config: { effort: 'low' },
+      system: [
+        { type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } },
+      ],
       messages: [
         {
           role: 'user',
-          content: `Title: ${title}\nAbstract: ${abstract || 'Not available'}\nJurisdiction: ${jurisdiction || 'Unknown'}`,
+          content: `Title: ${clamp(title)}\nAbstract: ${clamp(abstract) || 'Not available'}\nJurisdiction: ${clamp(jurisdiction, 200) || 'Unknown'}`,
         },
       ],
     });
 
-    const rawText = message.content[0].text;
-    const cleaned = rawText
-      .replace(/^```(?:json)?\s*\n?/i, '')
-      .replace(/\n?```\s*$/i, '')
-      .trim();
-
-    const parsed = JSON.parse(cleaned);
-    return res.status(200).json(parsed);
-  } catch (error) {
-    console.error('Summarization error:', error);
-
-    if (error instanceof SyntaxError) {
-      return res.status(502).json({
-        error: 'Failed to parse AI summary as JSON',
-        details: error.message,
-      });
+    if (message.stop_reason === 'max_tokens') {
+      throw new UpstreamError('Summary was truncated.', { code: 'output_truncated' });
     }
 
-    const statusCode = error.status || 500;
-    return res.status(statusCode).json({
-      error: 'Failed to summarize item',
-      details: error.message || String(error),
-    });
+    const parsed = parseJsonLoose(extractText(message));
+    // Summaries are derived from public documents and change rarely; let the CDN
+    // absorb repeat views instead of paying for the same summary on every load.
+    res.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
+    return res.status(200).json(parsed);
+  } catch (error) {
+    console.error('radar-summarize error:', error?.message);
+    const { status, body } = toClientError(error);
+    return res.status(status).json(body);
   }
 }

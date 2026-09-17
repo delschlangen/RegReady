@@ -1,6 +1,7 @@
 export const translatorExamples = [
   {
     label: 'EU AI Act — Article 50 (Transparency for AI-Generated Content)',
+    short: 'AI Act Art. 50',
     text: `Article 50 — Transparency obligations for providers and deployers of certain AI systems
 
 1. Providers shall ensure that AI systems intended to interact directly with natural persons are designed and developed in such a way that the natural persons concerned are informed that they are interacting with an AI system, unless this is obvious from the point of view of a natural person who is reasonably well-informed, observant and circumspect, taking into account the circumstances and the context of use. That obligation shall not apply to AI systems authorised by law to detect, prevent, investigate or prosecute criminal offences, subject to appropriate safeguards for the rights and freedoms of third parties, unless those systems are available for the public to report a criminal offence.
@@ -11,6 +12,7 @@ export const translatorExamples = [
   },
   {
     label: 'DSA — Article 34 (Risk Assessment for Very Large Platforms)',
+    short: 'DSA Art. 34',
     text: `Article 34 — Risk assessment
 
 1. Providers of very large online platforms and of very large online search engines shall diligently identify, analyse and assess any systemic risks in the Union stemming from the design, functioning and use including by way of manipulation of their services, as well as from the amplification and potentially rapid and wide dissemination of illegal content and of information incompatible with their terms and conditions through their services, covering the following systemic risks:
@@ -29,6 +31,7 @@ export const translatorExamples = [
   },
   {
     label: 'EU AI Act — Article 6 & Annex III (High-Risk AI Classification)',
+    short: 'AI Act Annex III',
     text: `Article 6 — Classification rules for high-risk AI systems
 
 1. Irrespective of whether an AI system is placed on the market or put into service independently from the products referred to in points (a) and (b), that AI system shall be considered high-risk where both of the following conditions are fulfilled:
@@ -43,22 +46,18 @@ Annex III (partial) — High-risk AI systems referred to in Article 6(2):
 8. Law enforcement, insofar as their use is permitted under relevant Union or national law: (a) AI systems intended to be used by or on behalf of law enforcement authorities, or by Union institutions, bodies, offices or agencies in support of law enforcement authorities or on their behalf to assess the risk of a natural person for offending or reoffending or the risk for potential victims of criminal offences. (b) AI systems intended to be used by or on behalf of law enforcement authorities as polygraphs and similar tools. (c) AI systems intended to be used by or on behalf of law enforcement authorities, or by Union institutions, bodies, offices or agencies in support of law enforcement authorities to evaluate the reliability of evidence in the course of investigation or prosecution of criminal offences. (d) AI systems intended to be used by law enforcement authorities or on their behalf for making individual risk assessments of natural persons in order to assess the risk of a natural person for offending or reoffending or the risk for potential victims of criminal offences.`,
   },
   {
-    label: 'Colorado AI Act — SB 205 (Algorithmic Discrimination)',
-    text: `Colorado SB 21-169 / SB 24-205 — Concerning consumer protections in interactions with artificial intelligence systems
+    label: 'Illinois HB 3773 — AI in Employment (current, effective Jan 2026)',
+    short: 'Illinois HB 3773',
+    text: `Illinois Public Act 103-0804 (HB 3773) — amending the Illinois Human Rights Act
 
-A developer or deployer of a high-risk artificial intelligence system shall use reasonable care to protect consumers from any known or reasonably foreseeable risks of algorithmic discrimination arising from the intended and contracted uses of the high-risk artificial intelligence system.
+It is a civil rights violation for an employer to use artificial intelligence that has the effect of subjecting employees to discrimination on the basis of a protected class with respect to recruitment, hiring, promotion, renewal of employment, selection for training or apprenticeship, discharge, discipline, tenure, or the terms, privileges, or conditions of employment.
 
-A deployer shall:
-(I) Implement a risk management policy and program to govern the deployment of high-risk artificial intelligence systems. The risk management policy and program must specify and incorporate the principles, processes, and personnel that the deployer uses to identify, document, and mitigate known or reasonably foreseeable risks of algorithmic discrimination.
-(II) Complete an impact assessment for any high-risk artificial intelligence system annually and within ninety days after any intentional and substantial modification to the high-risk artificial intelligence system. The deployer shall make the impact assessment available to the attorney general upon request.
-(III) Notify a consumer if the high-risk artificial intelligence system makes, or is a substantial factor in making, a consequential decision concerning the consumer. The notice must include:
-(A) A statement that a high-risk artificial intelligence system was used;
-(B) A description of the purpose of the system;
-(C) Contact information for the deployer;
-(D) A description of the right to opt out if applicable;
-(E) A plain-language description of the high-risk artificial intelligence system.
-(IV) Provide a consumer with an opportunity to correct any incorrect data and appeal a consequential decision.
+It is a civil rights violation for an employer to use artificial intelligence that uses zip code as a proxy for a protected class with respect to those same employment decisions.
 
-"Algorithmic discrimination" means any condition in which the use of an artificial intelligence system results in an unlawful differential treatment or impact that disfavors an individual or group of individuals on the basis of their actual or perceived age, color, disability, ethnicity, genetic information, limited proficiency in English, national origin, race, religion, reproductive health, sex, veteran status, or any other classification protected under the laws of this state or federal law.`,
+It is a civil rights violation for an employer to fail to provide notice to an employee that the employer is using artificial intelligence for any of the purposes described above.
+
+"Artificial intelligence" means a machine-based system that, for explicit or implicit objectives, infers, from the input it receives, how to generate outputs such as predictions, recommendations, or decisions that can influence physical or virtual environments.
+
+The Illinois Department of Human Rights is directed to adopt rules on the circumstances and conditions requiring notice, the time periods for providing notice, and the means of providing notice. Proposed rules were published on 15 May 2026 and the rulemaking was postponed on 2 June 2026, so the notice mechanics are not yet final while the underlying obligations are in force.`,
   },
 ];

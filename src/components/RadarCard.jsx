@@ -1,12 +1,17 @@
+import { lifecycle } from '../utils/lifecycle';
+
 const statusColors = {
   'Enacted': 'bg-[#34a853] text-white',
   'Effective': 'bg-[#34a853] text-white',
   'Rule': 'bg-[#1a73e8] text-white',
   'Proposed Rule': 'bg-[#f9ab00] text-gray-900',
   'Notice': 'bg-gray-200 text-gray-700',
+  'Presidential Document': 'bg-[#9334e6] text-white',
   'Executive Order': 'bg-[#9334e6] text-white',
   'Guidance': 'bg-gray-200 text-gray-700',
   'Published': 'bg-[#1a73e8] text-white',
+  'Repealed': 'bg-gray-900 text-white',
+  'Enjoined': 'bg-[#d93025] text-white',
 };
 
 const relevanceColors = {
@@ -15,9 +20,17 @@ const relevanceColors = {
   'Low': 'bg-gray-50 text-gray-500 border border-gray-200',
 };
 
+const lifecycleColors = {
+  live: 'bg-green-50 text-green-700 border border-green-200',
+  soon: 'bg-amber-50 text-amber-800 border border-amber-300',
+  future: 'bg-gray-50 text-gray-600 border border-gray-200',
+  dead: 'bg-gray-100 text-gray-500 border border-gray-300 line-through',
+};
+
 const jurisdictionBadge = (item) => {
   if (item.jurisdictionType === 'US Federal') return { label: 'US Federal', className: 'bg-[#1a73e8] text-white' };
   if (item.jurisdictionType === 'EU') return { label: 'EU', className: 'bg-[#003399] text-white' };
+  if (item.jurisdictionType === 'International') return { label: 'International', className: 'bg-teal-700 text-white' };
   return { label: item.jurisdiction, className: 'bg-gray-700 text-white' };
 };
 
@@ -25,6 +38,8 @@ export default function RadarCard({ item, onSendToTranslator, onSendToScorer }) 
   const badge = jurisdictionBadge(item);
   const statusColor = statusColors[item.status] || 'bg-gray-200 text-gray-700';
   const relevanceColor = relevanceColors[item.relevance] || relevanceColors['Low'];
+  const phase = lifecycle(item);
+  const superseded = item.status === 'Repealed' || item.status === 'Enjoined';
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5">
@@ -35,6 +50,14 @@ export default function RadarCard({ item, onSendToTranslator, onSendToScorer }) 
         <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${statusColor}`}>
           {item.status}
         </span>
+        {phase && (
+          <span
+            className={`text-xs font-medium px-2 py-0.5 rounded ${lifecycleColors[phase.tone]}`}
+            title={phase.detail}
+          >
+            {phase.label}
+          </span>
+        )}
         <span className={`text-xs font-medium px-2 py-0.5 rounded ${relevanceColor}`}>
           {item.relevance}
         </span>
@@ -53,7 +76,9 @@ export default function RadarCard({ item, onSendToTranslator, onSendToScorer }) 
         {item.title}
       </a>
 
-      <p className="text-sm text-gray-600 mt-2">{item.summary}</p>
+      <p className={`text-sm mt-2 ${superseded ? 'text-gray-500' : 'text-gray-600'}`}>
+        {item.summary || item.abstract || 'Summary pending.'}
+      </p>
 
       {item.productImpact && (
         <p className="text-sm text-gray-500 italic mt-2">{item.productImpact}</p>
@@ -67,9 +92,19 @@ export default function RadarCard({ item, onSendToTranslator, onSendToScorer }) 
         </div>
       )}
 
-      {item.effectiveDate && (
-        <p className="text-xs text-gray-400 mt-2">Effective: {item.effectiveDate}</p>
-      )}
+      <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2">
+        {item.effectiveDate && (
+          <p className="text-xs text-gray-400">Effective: {item.effectiveDate}</p>
+        )}
+        {item.asOf && (
+          <p className="text-xs text-gray-400">Verified: {item.asOf}</p>
+        )}
+        {item.sources?.length > 1 && (
+          <p className="text-xs text-gray-400">
+            {item.sources.length} sources
+          </p>
+        )}
+      </div>
 
       <div className="flex gap-2 mt-4">
         <button

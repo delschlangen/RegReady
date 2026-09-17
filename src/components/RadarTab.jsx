@@ -1,10 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import RadarCard from './RadarCard';
 import RadarFilters from './RadarFilters';
-import { stateRegulations } from '../data/stateRegulations';
+import { stateRegulations, CURATED_AS_OF } from '../data/stateRegulations';
 import { euRegulations } from '../data/euRegulations';
+import { federalRegulations } from '../data/federalRegulations';
+import { lifecycle } from '../utils/lifecycle';
 
 const SKELETON_COUNT = 3;
+// Federal items without an abstract get a Claude summary. Bounded per load so a
+// noisy Federal Register day cannot turn one page view into a large API bill.
+const MAX_SUMMARIES_PER_LOAD = 6;
+const SUMMARY_COOLDOWN_MS = 1200;
 
 function SkeletonCard() {
   return (
@@ -28,9 +34,11 @@ export default function RadarTab({ onSendToTab }) {
   const [federalError, setFederalError] = useState(null);
   const [summaryCache, setSummaryCache] = useState({});
   const [summarizing, setSummarizing] = useState(new Set());
+  const [federalFetchedAt, setFederalFetchedAt] = useState(null);
+  const attemptedRef = useRef(new Set());
 
   const [filters, setFilters] = useState({
-    jurisdictions: ['US Federal', 'US States', 'EU'],
+    jurisdictions: ['US Federal', 'US States', 'EU', 'International'],
     status: 'All',
     relevance: 'All',
   });
@@ -39,18 +47,27 @@ export default function RadarTab({ onSendToTab }) {
     fetchFederalData();
   }, []);
 
-  // Summarize federal items that don't have summaries yet
+  // Summarize federal items that have no abstract to fall back on.
+  //
+  // This effect must depend ONLY on federalItems. It previously also depended on
+  // summaryCache and summarizing — the same state it sets — so every write
+  // restarted it, the loop never reached its cooldown, and a page load fanned
+  // out into ~20 concurrent Claude calls that retried failures indefinitely.
+  // attemptedRef survives re-renders without triggering them, so each item is
+  // tried exactly once per mount whether it succeeds or fails.
   useEffect(() => {
-    const unsummarized = federalItems.filter(
-      (item) => !item.summary && !summaryCache[item.id] && !summarizing.has(item.id)
+    const pending = federalItems.filter(
+      (item) => !item.summary && !item.abstract && !attemptedRef.current.has(item.id),
     );
-    if (unsummarized.length === 0) return;
+    if (pending.length === 0) return;
 
     let cancelled = false;
+
     async function summarizeSequentially() {
-      for (const item of unsummarized) {
+      for (const item of pending.slice(0, MAX_SUMMARIES_PER_LOAD)) {
         if (cancelled) break;
-        setSummarizing((prev) => new Set([...prev, item.id]));
+        attemptedRef.current.add(item.id);
+        setSummarizing((prev) => new Set(prev).add(item.id));
         try {
           const res = await fetch('/api/radar-summarize', {
             method: 'POST',
@@ -63,23 +80,24 @@ export default function RadarTab({ onSendToTab }) {
           });
           if (res.ok) {
             const data = await res.json();
-            setSummaryCache((prev) => ({ ...prev, [item.id]: data }));
+            if (!cancelled) setSummaryCache((prev) => ({ ...prev, [item.id]: data }));
           }
         } catch {
-          // Silently skip failed summaries
+          // A failed summary is not worth retrying — the card still renders
+          // its title, link and agencies.
         }
         setSummarizing((prev) => {
           const next = new Set(prev);
           next.delete(item.id);
           return next;
         });
-        // 5s cooldown between calls
-        if (!cancelled) await new Promise((r) => setTimeout(r, 5000));
+        if (!cancelled) await new Promise((r) => setTimeout(r, SUMMARY_COOLDOWN_MS));
       }
     }
+
     summarizeSequentially();
     return () => { cancelled = true; };
-  }, [federalItems, summaryCache, summarizing]);
+  }, [federalItems]);
 
   async function fetchFederalData() {
     setFederalLoading(true);
@@ -88,7 +106,8 @@ export default function RadarTab({ onSendToTab }) {
       const res = await fetch('/api/radar-federal');
       if (!res.ok) throw new Error(`Federal Register API returned ${res.status}`);
       const data = await res.json();
-      setFederalItems(data);
+      setFederalItems(Array.isArray(data) ? data : []);
+      setFederalFetchedAt(new Date());
     } catch (err) {
       setFederalError(err.message);
     } finally {
@@ -100,6 +119,7 @@ export default function RadarTab({ onSendToTab }) {
   const allItems = [
     ...stateRegulations,
     ...euRegulations,
+    ...federalRegulations,
     ...federalItems.map((item) => {
       const cached = summaryCache[item.id];
       if (cached) {
@@ -120,18 +140,24 @@ export default function RadarTab({ onSendToTab }) {
     const jMatch =
       (filters.jurisdictions.includes('US States') && item.jurisdictionType === 'US State') ||
       (filters.jurisdictions.includes('US Federal') && item.jurisdictionType === 'US Federal') ||
-      (filters.jurisdictions.includes('EU') && item.jurisdictionType === 'EU');
+      (filters.jurisdictions.includes('EU') && item.jurisdictionType === 'EU') ||
+      (filters.jurisdictions.includes('International') && item.jurisdictionType === 'International');
     if (!jMatch) return false;
 
-    // Status filter
+    // Status filter — driven by what the dates actually mean today, so an
+    // "Enacted" item whose date has passed reads as in force, not as pending.
     if (filters.status !== 'All') {
-      const statusMap = {
-        'Enacted': ['Enacted', 'Effective'],
-        'Proposed': ['Proposed Rule', 'Notice'],
-        'Guidance': ['Guidance', 'Published'],
-      };
-      const allowed = statusMap[filters.status] || [];
-      if (!allowed.includes(item.status)) return false;
+      const phase = lifecycle(item);
+      const bucket =
+        phase?.tone === 'dead' ? 'Superseded'
+        : phase?.tone === 'live' ? 'In force'
+        : phase ? 'Upcoming'
+        : ['Proposed Rule', 'Notice'].includes(item.status) ? 'Proposed'
+        : ['Guidance', 'Published'].includes(item.status) ? 'Guidance'
+        : null;
+      const alsoProposed = filters.status === 'Proposed' && ['Proposed Rule', 'Notice'].includes(item.status);
+      const alsoGuidance = filters.status === 'Guidance' && ['Guidance', 'Published'].includes(item.status);
+      if (bucket !== filters.status && !alsoProposed && !alsoGuidance) return false;
     }
 
     // Relevance filter
@@ -154,20 +180,33 @@ export default function RadarTab({ onSendToTab }) {
     onSendToTab('riskScorer', text);
   }
 
-  const now = new Date().toLocaleDateString('en-US', {
-    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
-  });
+  // Each source has its own freshness — a single render-time clock would imply
+  // the curated entries were re-verified on page load, which they were not.
+  const federalFetchedLabel = federalFetchedAt
+    ? federalFetchedAt.toLocaleString('en-US', {
+        year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+      })
+    : federalLoading ? 'loading…' : 'unavailable';
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-6">
         <h2 className="text-xl font-bold text-gray-800">Regulatory Radar</h2>
-        <p className="text-sm text-gray-500 mt-1">AI regulatory developments — rolling 30-day view</p>
-        <div className="flex flex-wrap items-center gap-3 mt-2">
-          <span className="text-xs text-gray-400">Last updated: {now}</span>
-          <span className="text-xs text-gray-400">|</span>
-          <span className="text-xs text-gray-400">State legislation and EU data are manually curated. Federal items update automatically.</span>
+        <p className="text-sm text-gray-500 mt-1">
+          Curated AI regulatory milestones, plus the last 30 days of US federal activity
+        </p>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
+          <span className="text-xs text-gray-400">
+            Curated entries verified {CURATED_AS_OF}
+          </span>
+          <span className="text-xs text-gray-300">|</span>
+          <span className="text-xs text-gray-400">
+            Federal Register fetched {federalFetchedLabel}
+          </span>
         </div>
+        <p className="text-xs text-gray-400 mt-1">
+          Every curated card links its sources. Not legal advice — verify against the primary text before relying on it.
+        </p>
       </div>
 
       <RadarFilters filters={filters} onFilterChange={setFilters} />

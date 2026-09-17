@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import ExampleSelector from './ExampleSelector';
+import TabIntro from './TabIntro';
 import LoadingSpinner from './LoadingSpinner';
 import ResultCard from './ResultCard';
 import SaifRadarChart from './SaifRadarChart';
 import SaifMatrix from './SaifMatrix';
 import SaifGapCard from './SaifGapCard';
+import ExportBar from './ExportBar';
 import { saifExamples } from '../examples/saifExamples';
 import { analyzeInput } from '../utils/api';
 
-export default function SaifTab({ prefill, onClearPrefill }) {
+export default function SaifTab({ prefill, onClearPrefill, onSendToTab }) {
   const [input, setInput] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -44,7 +45,13 @@ export default function SaifTab({ prefill, onClearPrefill }) {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <ExampleSelector examples={saifExamples} onSelect={setInput} />
+        <TabIntro
+          title="SAIF Mapper"
+          what="Paste a regulatory provision. See which of the six elements of Google's Secure AI Framework already cover it, where the gaps are, and what to build to close them. SAIF is a security framework, so expect honest gaps on transparency and governance duties."
+          youGet={['Coverage across 6 SAIF elements', 'Per-element gaps', 'Gap recommendations', 'Cross-framework insights']}
+          examples={saifExamples}
+          onSelect={setInput}
+        />
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -72,6 +79,7 @@ export default function SaifTab({ prefill, onClearPrefill }) {
 
       {result && (
         <div>
+          <ExportBar mode='saif' result={result} />
           {/* Regulatory Context Banner */}
           {result.regulatoryContext && (
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-4">
@@ -140,6 +148,22 @@ export default function SaifTab({ prefill, onClearPrefill }) {
                 ))}
               </div>
             </ResultCard>
+          )}
+
+          {onSendToTab && result.overallAssessment?.criticalGaps?.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <button
+                onClick={() =>
+                  onSendToTab(
+                    'translator',
+                    `Turn these SAIF coverage gaps into engineering requirements.\n\nRegulation: ${result.regulatoryContext?.regulation || 'the analysed provision'}\n\nGaps SAIF does not cover:\n${result.overallAssessment.criticalGaps.map((g) => `- ${g}`).join('\n')}`,
+                  )
+                }
+                className="text-xs px-4 py-2 bg-[#e8f0fe] text-[#1a73e8] font-medium rounded-lg hover:bg-[#d2e3fc] transition-colors cursor-pointer"
+              >
+                Turn gaps into requirements
+              </button>
+            </div>
           )}
         </div>
       )}

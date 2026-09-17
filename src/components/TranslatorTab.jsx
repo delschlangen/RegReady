@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import ExampleSelector from './ExampleSelector';
+import TabIntro from './TabIntro';
 import LoadingSpinner from './LoadingSpinner';
 import ResultCard from './ResultCard';
 import JiraTicket from './JiraTicket';
+import ExportBar from './ExportBar';
 import { translatorExamples } from '../examples/translatorExamples';
 import { analyzeInput } from '../utils/api';
 
@@ -42,7 +43,13 @@ export default function TranslatorTab({ prefill, onClearPrefill, onSendToTab }) 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <ExampleSelector examples={translatorExamples} onSelect={setInput} />
+        <TabIntro
+          title="Reg \u2192 Reqs Translator"
+          what="Paste a regulatory provision. Get the product impact in plain English, prioritised engineering requirements traced back to the article, and ready-to-file tickets with acceptance criteria."
+          youGet={['Product impact summary', 'Prioritised requirements', 'Jira-ready tickets', 'Downstream dependencies']}
+          examples={translatorExamples}
+          onSelect={setInput}
+        />
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -70,6 +77,7 @@ export default function TranslatorTab({ prefill, onClearPrefill, onSendToTab }) 
 
       {result && (
         <div>
+          <ExportBar mode='translator' result={result} />
           <ResultCard title="Product Impact Summary">
             <p className="text-sm font-medium text-gray-800 mb-3">{result.impactSummary?.headline}</p>
             <ul className="space-y-2 mb-4">
