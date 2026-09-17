@@ -5,6 +5,7 @@ import ResultCard from './ResultCard';
 import SaifRadarChart from './SaifRadarChart';
 import SaifMatrix from './SaifMatrix';
 import SaifGapCard from './SaifGapCard';
+import ExportBar from './ExportBar';
 import { saifExamples } from '../examples/saifExamples';
 import { analyzeInput } from '../utils/api';
 
@@ -72,6 +73,7 @@ export default function SaifTab({ prefill, onClearPrefill }) {
 
       {result && (
         <div>
+          <ExportBar mode='saif' result={result} />
           {/* Regulatory Context Banner */}
           {result.regulatoryContext && (
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-4">

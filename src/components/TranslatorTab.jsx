@@ -3,6 +3,7 @@ import ExampleSelector from './ExampleSelector';
 import LoadingSpinner from './LoadingSpinner';
 import ResultCard from './ResultCard';
 import JiraTicket from './JiraTicket';
+import ExportBar from './ExportBar';
 import { translatorExamples } from '../examples/translatorExamples';
 import { analyzeInput } from '../utils/api';
 
@@ -70,6 +71,7 @@ export default function TranslatorTab({ prefill, onClearPrefill, onSendToTab }) 
 
       {result && (
         <div>
+          <ExportBar mode='translator' result={result} />
           <ResultCard title="Product Impact Summary">
             <p className="text-sm font-medium text-gray-800 mb-3">{result.impactSummary?.headline}</p>
             <ul className="space-y-2 mb-4">

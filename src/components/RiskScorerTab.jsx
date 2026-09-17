@@ -3,6 +3,7 @@ import ExampleSelector from './ExampleSelector';
 import LoadingSpinner from './LoadingSpinner';
 import ResultCard from './ResultCard';
 import RiskBadge from './RiskBadge';
+import ExportBar from './ExportBar';
 import { riskScorerExamples } from '../examples/riskScorerExamples';
 import { analyzeInput } from '../utils/api';
 
@@ -77,6 +78,7 @@ export default function RiskScorerTab({ prefill, onClearPrefill, onSendToTab }) 
 
       {result && (
         <div>
+          <ExportBar mode='riskScorer' result={result} />
           {/* Risk Classification Banner */}
           {result.riskClassification && (
             <div className={`rounded-lg p-6 mb-4 text-white ${tierBannerColors[result.riskClassification.tier] || 'bg-gray-500'}`}>
