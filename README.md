@@ -99,6 +99,31 @@ Curated regulatory data is verified as of the date shown in the app and on each
 card. **This is not legal advice** — verify against the primary text before
 relying on it.
 
+## API keys and cost
+
+The **Regulatory Radar is free to browse** — curated milestones with sources,
+plus the last 30 days of US federal activity. No key, no account.
+
+The Translator, Risk Scorer and SAIF Mapper each run a Claude model, so they
+need an Anthropic API key:
+
+- **Visitors** paste their own key in Settings. It is kept in that browser's
+  localStorage, sent over HTTPS to this site's API route for the duration of the
+  request, and is neither logged nor retained. It pays for that visitor's own
+  usage — a few cents per analysis.
+- **The deployment owner** sets `OWNER_PASSPHRASE` and enters it once, which
+  unlocks the deployment's own `ANTHROPIC_API_KEY`.
+
+There is no third way in. With `OWNER_PASSPHRASE` unset the server key is
+unreachable by anyone and the deployment is pure bring-your-own-key — which is
+the safest way to run a public instance. A passphrase under 24 characters is
+treated as unset, because a per-instance rate limiter cannot protect a billing
+account from distributed guessing; entropy has to do that work.
+
+If you deploy this, also set a spend limit on the key in the Anthropic Console.
+That is the only hard ceiling, and no amount of application code substitutes
+for it.
+
 ## Running it yourself
 
 ```bash

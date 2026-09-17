@@ -5,6 +5,8 @@ import TranslatorTab from './components/TranslatorTab';
 import RiskScorerTab from './components/RiskScorerTab';
 import RadarTab from './components/RadarTab';
 import SaifTab from './components/SaifTab';
+import SettingsDialog from './components/SettingsDialog';
+import { credentialMode } from './utils/credentials';
 
 const TAB_TITLES = {
   radar: 'Regulatory Radar',
@@ -24,6 +26,10 @@ function initialTab() {
 export default function App() {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [prefill, setPrefill] = useState({ translator: '', riskScorer: '', saif: '' });
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [credMode, setCredMode] = useState(() => credentialMode());
+
+  const openSettings = () => setSettingsOpen(true);
 
   // Tabs are mounted once visited and then hidden rather than unmounted.
   // Unmounting threw away an analysis the moment you switched tabs, which made
@@ -63,12 +69,13 @@ export default function App() {
   }
 
   const panels = {
-    radar: <RadarTab onSendToTab={handleSendToTab} />,
+    radar: <RadarTab onSendToTab={handleSendToTab} credMode={credMode} />,
     translator: (
       <TranslatorTab
         prefill={prefill.translator}
         onClearPrefill={() => handleClearPrefill('translator')}
         onSendToTab={handleSendToTab}
+        onOpenSettings={openSettings}
       />
     ),
     riskScorer: (
@@ -76,6 +83,7 @@ export default function App() {
         prefill={prefill.riskScorer}
         onClearPrefill={() => handleClearPrefill('riskScorer')}
         onSendToTab={handleSendToTab}
+        onOpenSettings={openSettings}
       />
     ),
     saif: (
@@ -83,14 +91,21 @@ export default function App() {
         prefill={prefill.saif}
         onClearPrefill={() => handleClearPrefill('saif')}
         onSendToTab={handleSendToTab}
+        onOpenSettings={openSettings}
       />
     ),
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8f9fa]">
-      <Header />
+      <Header credMode={credMode} onOpenSettings={openSettings} />
       <TabNav activeTab={activeTab} onTabChange={setActiveTab} />
+
+      <SettingsDialog
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        onSaved={() => setCredMode(credentialMode())}
+      />
 
       <main className="flex-1">
         {VALID_TABS.filter((t) => visited.current.has(t)).map((t) => (

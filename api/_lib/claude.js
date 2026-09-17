@@ -1,10 +1,20 @@
 import Anthropic from '@anthropic-ai/sdk';
 
-// Single shared client. Vercel does not deploy underscore-prefixed directories
-// as functions, so api/_lib/ is bundled into the handlers that import it.
-export const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+// Vercel does not deploy underscore-prefixed directories as functions, so
+// api/_lib/ is bundled into the handlers that import it.
+//
+// Clients are built PER REQUEST from whichever key the caller proved they may
+// use — the owner's server key, or a key the visitor supplied. Visitor keys are
+// never cached in module scope: a warm Vercel instance serves many people, and
+// a Map keyed by API key would keep other people's credentials in memory well
+// past the request that supplied them.
+export function clientFor(apiKey) {
+  if (!apiKey) throw new UpstreamError('No API key available for this request.', {
+    status: 401,
+    code: 'no_credentials',
+  });
+  return new Anthropic({ apiKey, maxRetries: 1 });
+}
 
 // Overridable without a redeploy of the code; falls back to the current
 // same-tier model. Sonnet 5 runs adaptive thinking by default, which means a
@@ -12,6 +22,11 @@ export const client = new Anthropic({
 export const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-5';
 
 export const MAX_INPUT_CHARS = 24000;
+
+// Caps the worst case cost of a single call. Adaptive thinking bills from this
+// same budget, so leave enough room for a full analysis plus its reasoning —
+// 4096 truncated real risk assessments in testing, 8192 did not.
+export const MAX_OUTPUT_TOKENS = 8192;
 
 export class UpstreamError extends Error {
   constructor(message, { status = 502, code = 'upstream_error', details } = {}) {
@@ -75,8 +90,8 @@ export function parseJsonLoose(raw) {
  * `system` is sent as a cacheable text block: prompts above the model's
  * minimum cacheable prefix are served from cache on repeat requests.
  */
-export async function callJson({ system, input, maxTokens = 8192, model = MODEL }) {
-  const message = await client.messages.create({
+export async function callJson({ apiKey, system, input, maxTokens = MAX_OUTPUT_TOKENS, model = MODEL }) {
+  const message = await clientFor(apiKey).messages.create({
     model,
     max_tokens: maxTokens,
     system: [
@@ -100,8 +115,17 @@ export async function callJson({ system, input, maxTokens = 8192, model = MODEL 
   return parseJsonLoose(extractText(message));
 }
 
-/** Map any thrown error to a safe {status, body} without leaking upstream text. */
-export function toClientError(error) {
+/**
+ * Map any thrown error to a safe {status, body} without leaking upstream text.
+ *
+ * `source` ('owner' | 'byok' | undefined) decides who gets blamed. Telling a
+ * visitor whose own key was rejected that "the service is misconfigured" sends
+ * them to report a bug that is actually their expired key — so the same
+ * upstream status has to read differently depending on whose key was spent.
+ */
+export function toClientError(error, source) {
+  const byok = source === 'byok';
+
   if (error instanceof UpstreamError) {
     return {
       status: error.status,
@@ -111,13 +135,34 @@ export function toClientError(error) {
   if (error instanceof Anthropic.RateLimitError) {
     return {
       status: 429,
-      body: { error: 'Too many requests right now. Try again shortly.', code: 'rate_limited' },
+      body: {
+        error: byok
+          ? 'Anthropic rate-limited your API key. Wait a moment and try again.'
+          : 'Too many requests right now. Try again shortly.',
+        code: 'rate_limited',
+      },
     };
   }
   if (error instanceof Anthropic.AuthenticationError) {
     return {
-      status: 500,
-      body: { error: 'The analysis service is not configured correctly.', code: 'not_configured' },
+      status: byok ? 401 : 500,
+      body: byok
+        ? {
+            error: 'Anthropic rejected your API key. Check that it is correct and still active.',
+            code: 'key_rejected',
+          }
+        : { error: 'The analysis service is not configured correctly.', code: 'not_configured' },
+    };
+  }
+  if (error instanceof Anthropic.PermissionDeniedError) {
+    return {
+      status: 403,
+      body: {
+        error: byok
+          ? 'Your API key does not have access to this model, or its credit balance is exhausted.'
+          : 'The analysis service was denied access to the model.',
+        code: 'permission_denied',
+      },
     };
   }
   if (error instanceof Anthropic.APIConnectionError) {
@@ -127,9 +172,16 @@ export function toClientError(error) {
     };
   }
   if (error instanceof Anthropic.APIError) {
+    const status = error.status && error.status >= 500 ? 502 : 400;
     return {
-      status: error.status && error.status >= 500 ? 502 : 400,
-      body: { error: 'The analysis service rejected the request.', code: 'upstream_error' },
+      status,
+      body: {
+        error:
+          byok && status === 400
+            ? 'Anthropic rejected the request made with your key.'
+            : 'The analysis service rejected the request.',
+        code: 'upstream_error',
+      },
     };
   }
   return {

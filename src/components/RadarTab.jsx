@@ -5,6 +5,7 @@ import { stateRegulations, CURATED_AS_OF } from '../data/stateRegulations';
 import { euRegulations } from '../data/euRegulations';
 import { federalRegulations } from '../data/federalRegulations';
 import { lifecycle } from '../utils/lifecycle';
+import { authHeaders } from '../utils/credentials';
 
 const SKELETON_COUNT = 3;
 // Federal items without an abstract get a Claude summary. Bounded per load so a
@@ -28,7 +29,7 @@ function SkeletonCard() {
   );
 }
 
-export default function RadarTab({ onSendToTab }) {
+export default function RadarTab({ onSendToTab, credMode }) {
   const [federalItems, setFederalItems] = useState([]);
   const [federalLoading, setFederalLoading] = useState(true);
   const [federalError, setFederalError] = useState(null);
@@ -56,6 +57,11 @@ export default function RadarTab({ onSendToTab }) {
   // attemptedRef survives re-renders without triggering them, so each item is
   // tried exactly once per mount whether it succeeds or fails.
   useEffect(() => {
+    // Summarising costs a Claude call. Without credentials the request would
+    // 401, so skip it entirely — cards still render their title, agencies and
+    // link, and the Radar stays fully usable with no key.
+    if (!credMode) return;
+
     const pending = federalItems.filter(
       (item) => !item.summary && !item.abstract && !attemptedRef.current.has(item.id),
     );
@@ -71,7 +77,7 @@ export default function RadarTab({ onSendToTab }) {
         try {
           const res = await fetch('/api/radar-summarize', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...authHeaders() },
             body: JSON.stringify({
               title: item.title,
               abstract: item.abstract || '',
@@ -97,7 +103,7 @@ export default function RadarTab({ onSendToTab }) {
 
     summarizeSequentially();
     return () => { cancelled = true; };
-  }, [federalItems]);
+  }, [federalItems, credMode]);
 
   async function fetchFederalData() {
     setFederalLoading(true);

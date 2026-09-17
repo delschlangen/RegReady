@@ -38,10 +38,12 @@ export default async function handler(req, res) {
 
     return res.status(200).json(items);
   } catch (error) {
-    console.error('Federal Register API error:', error);
+    console.error('Federal Register API error:', error?.message);
+    // Do not echo the upstream error string to the client — it is the only
+    // endpoint that did, and it can carry internal request detail.
     return res.status(502).json({
-      error: 'Failed to fetch federal register data',
-      details: error.message,
+      error: 'Could not reach the Federal Register right now.',
+      code: 'federal_register_unavailable',
     });
   }
 }
