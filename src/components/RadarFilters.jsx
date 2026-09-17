@@ -1,6 +1,6 @@
 export default function RadarFilters({ filters, onFilterChange }) {
-  const jurisdictionOptions = ['US Federal', 'US States', 'EU'];
-  const statusOptions = ['All', 'Enacted', 'Proposed', 'Guidance'];
+  const jurisdictionOptions = ['US Federal', 'US States', 'EU', 'International'];
+  const statusOptions = ['All', 'In force', 'Upcoming', 'Proposed', 'Guidance', 'Superseded'];
   const relevanceOptions = ['All', 'High', 'High + Medium'];
 
   function toggleJurisdiction(j) {
