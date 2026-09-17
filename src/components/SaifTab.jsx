@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import TabIntro from './TabIntro';
+import CredentialsPrompt from './CredentialsPrompt';
 import LoadingSpinner from './LoadingSpinner';
 import ResultCard from './ResultCard';
 import SaifRadarChart from './SaifRadarChart';
@@ -7,13 +8,14 @@ import SaifMatrix from './SaifMatrix';
 import SaifGapCard from './SaifGapCard';
 import ExportBar from './ExportBar';
 import { saifExamples } from '../examples/saifExamples';
-import { analyzeInput } from '../utils/api';
+import { analyzeInput, CredentialsError } from '../utils/api';
 
-export default function SaifTab({ prefill, onClearPrefill, onSendToTab }) {
+export default function SaifTab({ prefill, onClearPrefill, onSendToTab, onOpenSettings }) {
   const [input, setInput] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [credError, setCredError] = useState(null);
   const [cooldown, setCooldown] = useState(false);
 
   useEffect(() => {
@@ -28,6 +30,7 @@ export default function SaifTab({ prefill, onClearPrefill, onSendToTab }) {
 
     setLoading(true);
     setError(null);
+    setCredError(null);
     setResult(null);
     setCooldown(true);
 
@@ -35,7 +38,8 @@ export default function SaifTab({ prefill, onClearPrefill, onSendToTab }) {
       const data = await analyzeInput('saif', input);
       setResult(data);
     } catch (err) {
-      setError(err.message);
+      if (err instanceof CredentialsError) setCredError({ code: err.code, message: err.message });
+      else setError(err.message);
     } finally {
       setLoading(false);
       setTimeout(() => setCooldown(false), 5000);
@@ -69,6 +73,16 @@ export default function SaifTab({ prefill, onClearPrefill, onSendToTab }) {
       </div>
 
       {loading && <LoadingSpinner message="Mapping regulatory requirements to SAIF..." />}
+
+      {credError && (
+        <div className="mb-4">
+          <CredentialsPrompt
+            code={credError.code}
+            message={credError.message}
+            onOpenSettings={onOpenSettings}
+          />
+        </div>
+      )}
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
