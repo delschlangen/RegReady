@@ -1,6 +1,7 @@
 export const translatorExamples = [
   {
     label: 'EU AI Act — Article 50 (Transparency for AI-Generated Content)',
+    short: 'AI Act Art. 50',
     text: `Article 50 — Transparency obligations for providers and deployers of certain AI systems
 
 1. Providers shall ensure that AI systems intended to interact directly with natural persons are designed and developed in such a way that the natural persons concerned are informed that they are interacting with an AI system, unless this is obvious from the point of view of a natural person who is reasonably well-informed, observant and circumspect, taking into account the circumstances and the context of use. That obligation shall not apply to AI systems authorised by law to detect, prevent, investigate or prosecute criminal offences, subject to appropriate safeguards for the rights and freedoms of third parties, unless those systems are available for the public to report a criminal offence.
@@ -11,6 +12,7 @@ export const translatorExamples = [
   },
   {
     label: 'DSA — Article 34 (Risk Assessment for Very Large Platforms)',
+    short: 'DSA Art. 34',
     text: `Article 34 — Risk assessment
 
 1. Providers of very large online platforms and of very large online search engines shall diligently identify, analyse and assess any systemic risks in the Union stemming from the design, functioning and use including by way of manipulation of their services, as well as from the amplification and potentially rapid and wide dissemination of illegal content and of information incompatible with their terms and conditions through their services, covering the following systemic risks:
@@ -29,6 +31,7 @@ export const translatorExamples = [
   },
   {
     label: 'EU AI Act — Article 6 & Annex III (High-Risk AI Classification)',
+    short: 'AI Act Annex III',
     text: `Article 6 — Classification rules for high-risk AI systems
 
 1. Irrespective of whether an AI system is placed on the market or put into service independently from the products referred to in points (a) and (b), that AI system shall be considered high-risk where both of the following conditions are fulfilled:
@@ -44,6 +47,7 @@ Annex III (partial) — High-risk AI systems referred to in Article 6(2):
   },
   {
     label: 'Illinois HB 3773 — AI in Employment (current, effective Jan 2026)',
+    short: 'Illinois HB 3773',
     text: `Illinois Public Act 103-0804 (HB 3773) — amending the Illinois Human Rights Act
 
 It is a civil rights violation for an employer to use artificial intelligence that has the effect of subjecting employees to discrimination on the basis of a protected class with respect to recruitment, hiring, promotion, renewal of employment, selection for training or apprenticeship, discharge, discipline, tenure, or the terms, privileges, or conditions of employment.

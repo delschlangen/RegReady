@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import ExampleSelector from './ExampleSelector';
+import TabIntro from './TabIntro';
 import LoadingSpinner from './LoadingSpinner';
 import ResultCard from './ResultCard';
 import RiskBadge from './RiskBadge';
@@ -50,7 +50,13 @@ export default function RiskScorerTab({ prefill, onClearPrefill, onSendToTab }) 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <ExampleSelector examples={riskScorerExamples} onSelect={setInput} />
+        <TabIntro
+          title="Risk Triage Scorer"
+          what="Describe an AI feature or system. Get an EU AI Act risk tier, a multi-jurisdiction exposure matrix that separates binding law from voluntary frameworks, and a concrete path to a compliant version."
+          youGet={['EU AI Act risk tier', 'Multi-jurisdiction exposure', 'Vulnerability flags', 'Compliant path']}
+          examples={riskScorerExamples}
+          onSelect={setInput}
+        />
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}

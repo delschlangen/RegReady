@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import ExampleSelector from './ExampleSelector';
+import TabIntro from './TabIntro';
 import LoadingSpinner from './LoadingSpinner';
 import ResultCard from './ResultCard';
 import SaifRadarChart from './SaifRadarChart';
@@ -45,7 +45,13 @@ export default function SaifTab({ prefill, onClearPrefill, onSendToTab }) {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <ExampleSelector examples={saifExamples} onSelect={setInput} />
+        <TabIntro
+          title="SAIF Mapper"
+          what="Paste a regulatory provision. See which of the six elements of Google's Secure AI Framework already cover it, where the gaps are, and what to build to close them. SAIF is a security framework, so expect honest gaps on transparency and governance duties."
+          youGet={['Coverage across 6 SAIF elements', 'Per-element gaps', 'Gap recommendations', 'Cross-framework insights']}
+          examples={saifExamples}
+          onSelect={setInput}
+        />
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}

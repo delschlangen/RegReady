@@ -1,6 +1,7 @@
 export const saifExamples = [
   {
     label: 'EU AI Act — Article 9 (Risk Management System)',
+    short: 'AI Act Art. 9',
     text: `Article 9 — Risk management system
 
 1. A risk management system shall be established, implemented, documented and maintained in relation to high-risk AI systems.
@@ -15,6 +16,7 @@ export const saifExamples = [
   },
   {
     label: 'EU AI Act — Article 15 (Accuracy, Robustness and Cybersecurity)',
+    short: 'AI Act Art. 15',
     text: `Article 15 — Accuracy, robustness and cybersecurity
 
 1. High-risk AI systems shall be designed and developed in such a way that they achieve an appropriate level of accuracy, robustness, and cybersecurity, and that they perform consistently in those respects throughout their lifecycle.
@@ -29,6 +31,7 @@ The robustness of high-risk AI systems may be achieved through technical redunda
   },
   {
     label: 'DSA Article 34-35 (Systemic Risk Assessment and Mitigation)',
+    short: 'DSA Art. 34-35',
     text: `Article 34 — Risk assessment
 
 Providers of very large online platforms and of very large online search engines shall diligently identify, analyse and assess any systemic risks in the Union stemming from the design or functioning of their service and its related systems, including algorithmic systems, or from the use made of their services.
@@ -39,6 +42,7 @@ Providers of very large online platforms and of very large online search engines
   },
   {
     label: 'EU AI Act — Article 27 (Fundamental Rights Impact Assessment)',
+    short: 'AI Act Art. 27 (FRIA)',
     text: `Article 27 — Fundamental rights impact assessment for high-risk AI systems
 
 Prior to deploying a high-risk AI system referred to in Article 6(2), with the exception of high-risk AI systems intended to be used in the area listed in point 2 of Annex III, deployers that are bodies governed by public law, or are private entities providing public services, and deployers of high-risk AI systems referred to in points 5(b) and (c) of Annex III, shall perform an assessment of the impact on fundamental rights that the use of such system may produce. For that purpose, deployers shall perform an assessment consisting of:
