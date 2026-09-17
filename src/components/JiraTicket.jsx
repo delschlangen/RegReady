@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { toJiraMarkup } from '../utils/exportResult';
+
 const priorityColors = {
   P0: 'text-[#d93025]',
   P1: 'text-[#e8710a]',
@@ -6,6 +9,19 @@ const priorityColors = {
 };
 
 export default function JiraTicket({ ticket }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copyJira() {
+    const text = toJiraMarkup(ticket);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  }
+
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden mb-3 last:mb-0">
       <div className="border-l-4 border-l-[#1a73e8] p-4">
@@ -24,6 +40,14 @@ export default function JiraTicket({ ticket }) {
               {ticket.storyPoints} pts
             </span>
           )}
+          {/* Jira description fields take wiki markup, not Markdown. */}
+          <button
+            type="button"
+            onClick={copyJira}
+            className="ml-auto text-xs text-gray-400 hover:text-gray-700 border border-gray-200 rounded px-2 py-0.5 transition-colors cursor-pointer"
+          >
+            {copied ? 'Copied' : 'Copy as Jira'}
+          </button>
         </div>
 
         <h4 className="text-sm font-semibold text-gray-900 mb-1">{ticket.title}</h4>

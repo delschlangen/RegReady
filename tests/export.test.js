@@ -187,3 +187,23 @@ test('bundled examples do not quote superseded law as current', async () => {
     }
   }
 });
+
+test('jira markup uses wiki syntax, not markdown', async () => {
+  const { toJiraMarkup, toJiraCsv } = await import('../src/utils/exportResult.js');
+  const md = toJiraMarkup(TRANSLATOR.jiraTickets[0]);
+  assert.match(md, /^h3\. Add marker/, 'Jira headings are h3., not ##');
+  assert.ok(!md.includes('##'), 'markdown heading leaked into Jira markup');
+  assert.ok(md.includes('* Badge shows on every AI reply'), 'acceptance criteria missing');
+  assert.ok(md.includes('*Priority:* P0'));
+  assert.equal(toJiraMarkup(null), '');
+
+  const csv = toJiraCsv(TRANSLATOR.jiraTickets);
+  const [header] = csv.split('\n');
+  assert.equal(header, '"Summary","Issue Type","Priority","Description","Story Points","Labels"');
+  assert.ok(csv.includes('"Add marker"'));
+  assert.equal(toJiraCsv([]), '');
+
+  // Embedded quotes must be doubled or the import breaks.
+  const quoted = toJiraCsv([{ title: 'A "quoted" title', type: 'Task' }]);
+  assert.ok(quoted.includes('"A ""quoted"" title"'), 'CSV quote escaping is wrong');
+});

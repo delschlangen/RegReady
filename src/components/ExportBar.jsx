@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { toMarkdown, filenameFor } from '../utils/exportResult';
+import { toMarkdown, filenameFor, toJiraCsv } from '../utils/exportResult';
 
 function download(filename, text, type) {
   const blob = new Blob([text], { type });
@@ -65,6 +65,17 @@ export default function ExportBar({ mode, result }) {
       >
         Download .json
       </button>
+      {mode === 'translator' && result.jiraTickets?.length > 0 && (
+        <button
+          type="button"
+          onClick={() =>
+            download(`${filenameFor(mode, result)}-jira.csv`, toJiraCsv(result.jiraTickets), 'text/csv')
+          }
+          className={btn}
+        >
+          Jira CSV ({result.jiraTickets.length})
+        </button>
+      )}
       <button type="button" onClick={() => window.print()} className={btn}>
         Print / PDF
       </button>
