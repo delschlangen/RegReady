@@ -16,36 +16,48 @@ import { UpstreamError } from './claude.js';
  * to guess.
  */
 
-function allowedOrigins() {
-  const configured = (process.env.ALLOWED_ORIGINS || '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
-  // VERCEL_URL is the deployment host with no scheme, and is absent locally.
-  const vercel = process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : [];
-  return new Set([...configured, ...vercel]);
+function header(req, name) {
+  const v = req?.headers?.[name] ?? req?.headers?.get?.(name);
+  return typeof v === 'string' ? v.trim() : '';
+}
+
+function extraAllowedOrigins() {
+  return new Set(
+    (process.env.ALLOWED_ORIGINS || '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean),
+  );
 }
 
 /**
- * Reject cross-site browser calls. A request with no Origin at all is allowed:
- * that is a same-origin non-CORS POST, a server-side caller, or curl — none of
- * which the origin header can distinguish anyway.
+ * Reject cross-site browser calls.
+ *
+ * Same-origin is decided by comparing the browser's Origin against the Host it
+ * actually sent the request to. That is correct on every hostname the app can
+ * be served from — the production alias, a preview deployment, a custom domain,
+ * localhost — with nothing to configure.
+ *
+ * Do NOT reintroduce an allow-list built from VERCEL_URL. That variable holds
+ * the deployment-specific hostname (regready-abc123.vercel.app), never the
+ * production alias, so it rejected every real visitor while looking configured.
+ *
+ * A request with no Origin at all is allowed: that is a same-origin non-CORS
+ * POST, a server-side caller, or curl — none of which this header distinguishes.
  */
 export function checkOrigin(req) {
-  const origin = req?.headers?.origin || req?.headers?.get?.('origin');
+  const origin = header(req, 'origin');
   if (!origin) return;
 
-  const allowed = allowedOrigins();
-  // With nothing configured (local dev, a preview URL) do not lock the app out
-  // of itself — there is no safe list to compare against.
-  if (allowed.size === 0) return;
+  const host = header(req, 'host');
+  if (host && (origin === `https://${host}` || origin === `http://${host}`)) return;
 
-  if (!allowed.has(origin)) {
-    throw new UpstreamError('Requests from this origin are not allowed.', {
-      status: 403,
-      code: 'origin_not_allowed',
-    });
-  }
+  if (extraAllowedOrigins().has(origin)) return;
+
+  throw new UpstreamError('Requests from this origin are not allowed.', {
+    status: 403,
+    code: 'origin_not_allowed',
+  });
 }
 
 // bucketName -> Map<identity, {tokens, updated}>

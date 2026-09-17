@@ -159,19 +159,46 @@ test('a visitor cannot smuggle the server key by sending both headers', () => {
 });
 
 test('origin check allows same-origin and blocks other sites', () => {
-  withEnv({ ALLOWED_ORIGINS: 'https://reg-ready.vercel.app', VERCEL_URL: undefined }, () => {
+  withEnv({ ALLOWED_ORIGINS: undefined }, () => {
     assert.doesNotThrow(() => checkOrigin(req()), 'no Origin header is allowed');
-    assert.doesNotThrow(() => checkOrigin(req({ origin: 'https://reg-ready.vercel.app' })));
-    assert.throws(() => checkOrigin(req({ origin: 'https://evil.example' })), (e) => {
-      assert.equal(e.status, 403);
-      return true;
-    });
+    assert.doesNotThrow(() =>
+      checkOrigin(req({ origin: 'https://reg-ready.vercel.app', host: 'reg-ready.vercel.app' })));
+    assert.throws(
+      () => checkOrigin(req({ origin: 'https://evil.example', host: 'reg-ready.vercel.app' })),
+      (e) => {
+        assert.equal(e.status, 403);
+        return true;
+      },
+    );
   });
 });
 
-test('origin check does not lock out a deployment with nothing configured', () => {
-  withEnv({ ALLOWED_ORIGINS: undefined, VERCEL_URL: undefined }, () => {
-    assert.doesNotThrow(() => checkOrigin(req({ origin: 'http://localhost:5173' })));
+// This is the regression that took the live site down: VERCEL_URL holds the
+// deployment hostname, never the production alias, so an allow-list built from
+// it rejected every genuine visitor. Same-origin must be decided against Host.
+test('origin check works on any hostname with nothing configured', () => {
+  withEnv({ ALLOWED_ORIGINS: undefined, VERCEL_URL: 'regready-abc123.vercel.app' }, () => {
+    for (const host of [
+      'reg-ready.vercel.app',
+      'regready-abc123.vercel.app',
+      'regready-git-main-del.vercel.app',
+      'regready.com',
+    ]) {
+      assert.doesNotThrow(
+        () => checkOrigin(req({ origin: `https://${host}`, host })),
+        `${host} must be able to call its own API`,
+      );
+    }
+    // localhost over plain http during local dev.
+    assert.doesNotThrow(() =>
+      checkOrigin(req({ origin: 'http://localhost:4173', host: 'localhost:4173' })));
+  });
+});
+
+test('extra origins can still be allow-listed explicitly', () => {
+  withEnv({ ALLOWED_ORIGINS: 'https://docs.example' }, () => {
+    assert.doesNotThrow(() =>
+      checkOrigin(req({ origin: 'https://docs.example', host: 'reg-ready.vercel.app' })));
   });
 });
 
